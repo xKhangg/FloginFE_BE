@@ -62,7 +62,7 @@ public class ProductEntity {
         this.category = category;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
