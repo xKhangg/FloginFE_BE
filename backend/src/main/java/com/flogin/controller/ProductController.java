@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api/products")
 public class ProductController {
 
     private final ProductService productService;
@@ -28,7 +29,6 @@ public class ProductController {
     Nếu client gửi body với các trường bị thiếu: Annotation @Valid sẽ kiểm tra các ràng buộc (@NotNull, @NotBlank) bên trong DTO.
     Nếu categoryId bị thiếu (là null), @Valid sẽ phát hiện và Spring sẽ ném ra lỗi MethodArgumentNotValidException trước khi code của bạn được thực thi.
      */
-    @RequestMapping("/api/products")
     @PostMapping
     public ResponseEntity<ProductEntity> createProduct(
             @Valid @RequestBody ProductDTO productDTO
