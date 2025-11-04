@@ -1,6 +1,7 @@
 package com.flogin.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "categories")
@@ -10,6 +11,7 @@ public class CategoryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotBlank(message = "Tên loại sản phẩm không được để trống")
     @Column(nullable = false, unique = true)
     private String name;
 
@@ -33,6 +35,9 @@ public class CategoryEntity {
     }
 
     public void setName(String name) {
+        if(name == null || name.isBlank()){
+            throw new IllegalArgumentException("Tên loại sản phẩm không được để trống");
+        }
         this.name = name;
     }
 }

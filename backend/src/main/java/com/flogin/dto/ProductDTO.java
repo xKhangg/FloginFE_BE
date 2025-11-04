@@ -1,31 +1,28 @@
 package com.flogin.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 public class ProductDTO {
 
     @NotBlank(message = "Tên sản phẩm không được để trống")
-    @Min(value = 3, message = "Tên sản phẩm phải có tối thiểu 3 ký tự")
-    @Max(value = 100, message = "Tên sản phẩm phải có tối đa 100 ký tự")
+    //@Size kiểm tra độ dài chuỗi
+    @Size(min = 3, max = 100, message = "Tên sản phẩm phải từ 3 đến 100 ký tự")
     private String name;
 
-    @NotNull(message = "Giá sản phẩm không được để trống")
-    @Min(value = 0, message = "Giá sản phẩm không được âm")
+    @Positive(message = "Giá sản phẩm phải lớn hơn 0")
     @Max(value = 999_999_999, message = "Giá sản phẩm tối đa 999,999,999")
     private double price;
 
-    @NotNull(message = "Số lượng sản phẩm không được để trống")
+    //@Min @Max kiểm tra giá trị của số
     @Min(value = 0, message = "Số lượng sản phẩm không được âm")
     @Max(value = 99_999, message = "Số lượng sản phẩm tối đa 99,999")
     private int quantity;
 
-    @Max(value = 500, message = "Mô tả sản phẩm tối đa 500 ký tự")
+    @Size(max = 500, message = "Mô tả sản phẩm tối đa 500 ký tự")
     private String description;
 
-    @NotNull(message = "ID của loại sản phẩm không được để trống")
+    //categoryId là Primitive nên nếu là null hoặc blank thì nó sẽ thành 0
+    @Min(value = 1, message = "ID của loại sản phẩm không được để trống")
     private int categoryId;
 
     public ProductDTO(String name, double price, int quantity, String description, int categoryId) {
