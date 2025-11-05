@@ -4,12 +4,12 @@ import com.flogin.dto.ProductDTO;
 import com.flogin.entity.ProductEntity;
 import com.flogin.service.ProductService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
@@ -41,5 +41,57 @@ public class ProductController {
         ProductEntity newProductEnity = productService.createProduct(productDTO);
 
         return new ResponseEntity<>(newProductEnity, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+//    public ResponseEntity<List<ProductDTO>> getAllProducts(
+//            @RequestParam(required = false) Integer categoryId
+//    ){
+//        List<ProductDTO> productDTOList = productService.getAllProducts(categoryId);
+//
+//        return ResponseEntity.ok(productDTOList);
+//    }
+    //Phân trang
+    public ResponseEntity<Page<ProductDTO>> getAllProducts(
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ){
+        Page<ProductDTO> productsPage = productService.getAllProducts(categoryId, page, pageSize);
+
+        return ResponseEntity.ok(productsPage);
+    }
+
+    /*
+    @GetMapping("/{id}"): Bạn đang định nghĩa một Biến đường dẫn (Path Variable). URL mà Spring Boot mong đợi sẽ là: /api/products/123.
+
+    @RequestParam Integer productId: Bạn lại đang cố gắng đọc một Tham số truy vấn (Query Parameter). URL mà annotation này mong đợi là: /api/products?productId=123.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDTO> getProduct(
+            @PathVariable Integer id
+    ){
+        ProductDTO productDTO = productService.getProduct(id);
+
+        return ResponseEntity.ok(productDTO);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductDTO> updateProduct(
+            @PathVariable Integer id,
+            @Valid @RequestBody ProductDTO productDTO
+    ){
+        ProductDTO updatedProductDTO = productService.updateProduct(id, productDTO);
+
+        return ResponseEntity.ok(updatedProductDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(
+            @PathVariable Integer id
+    ){
+        productService.deleteProduct(id);
+
+        return ResponseEntity.noContent().build();
     }
 }
