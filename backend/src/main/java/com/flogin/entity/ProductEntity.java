@@ -51,17 +51,6 @@ public class ProductEntity {
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity category;
 
-    public ProductEntity() {
-    }
-
-    public ProductEntity(String name, double price, int quantity, String description, CategoryEntity category) {
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-        this.description = description;
-        this.category = category;
-    }
-
     public Integer getId() {
         return id;
     }

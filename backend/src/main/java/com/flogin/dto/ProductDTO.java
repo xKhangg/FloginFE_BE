@@ -4,6 +4,8 @@ import jakarta.validation.constraints.*;
 
 public class ProductDTO {
 
+    private int id;
+
     @NotBlank(message = "Tên sản phẩm không được để trống")
     //@Size kiểm tra độ dài chuỗi
     @Size(min = 3, max = 100, message = "Tên sản phẩm phải từ 3 đến 100 ký tự")
@@ -25,12 +27,14 @@ public class ProductDTO {
     @Min(value = 1, message = "ID của loại sản phẩm không được để trống")
     private int categoryId;
 
-    public ProductDTO(String name, double price, int quantity, String description, int categoryId) {
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-        this.description = description;
-        this.categoryId = categoryId;
+    private String categoryName;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -71,5 +75,13 @@ public class ProductDTO {
 
     public void setCategoryId(int categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }

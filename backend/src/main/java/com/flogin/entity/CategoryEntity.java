@@ -15,13 +15,6 @@ public class CategoryEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
-    public CategoryEntity() {
-    }
-
-    public CategoryEntity(String name) {
-        this.name = name;
-    }
-
     public Integer getId() {
         return id;
     }
