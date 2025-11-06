@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+//import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
@@ -17,6 +17,8 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+
+    private static final int FIXED_PAGE_SIZE = 10;
 
     public ProductController(ProductService productService) {
         this.productService = productService;
@@ -55,10 +57,9 @@ public class ProductController {
     //Phân trang
     public ResponseEntity<Page<ProductDTO>> getAllProducts(
             @RequestParam(required = false) Integer categoryId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int pageSize
+            @RequestParam(defaultValue = "0") int page
     ){
-        Page<ProductDTO> productsPage = productService.getAllProducts(categoryId, page, pageSize);
+        Page<ProductDTO> productsPage = productService.getAllProducts(categoryId, page, FIXED_PAGE_SIZE);
 
         return ResponseEntity.ok(productsPage);
     }

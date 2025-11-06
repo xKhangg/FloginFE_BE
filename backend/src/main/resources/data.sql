@@ -33,7 +33,7 @@ SELECT 'Án Mạng Trên Sông Nile', 120000, 30, 'Tác giả: Agatha Christie. 
 
 -- Cuốn 3: Thiếu nhi
 INSERT INTO products (name, price, quantity, description, category_id)
-SELECT 'Dế Mèn Phiêu Lưiu Ký', 80000, 100, 'Tác giả: Tô Hoài. Phiên bản có tranh minh họa màu.', (SELECT id FROM categories WHERE name = 'Thiếu nhi')
+SELECT 'Dế Mèn Phiêu Lưu Ký', 80000, 100, 'Tác giả: Tô Hoài. Phiên bản có tranh minh họa màu.', (SELECT id FROM categories WHERE name = 'Thiếu nhi')
     WHERE NOT EXISTS (SELECT 1 FROM products WHERE name = 'Dế Mèn Phiêu Lưiu Ký');
 
 -- Cuốn 4: Khoa học
