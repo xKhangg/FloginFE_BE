@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // !!! THAY ĐỔI URL NÀY
-const API_BASE_URL = 'http://api-cua-ban.com/api';
+const API_BASE_URL = 'http://localhost:8080/api';
 
 /**
  * Gọi API để đăng nhập

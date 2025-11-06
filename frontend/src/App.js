@@ -2,9 +2,9 @@ import React from 'react';
 // Import hooks và components cần thiết từ react-router-dom
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
-// Sửa đường dẫn: 'Components' -> 'components' (chữ thường)
-import Login from './Components/Login';
-import ProductManagement from './Components/ProductManagement';
+
+import Login from './components/Login/Login';
+import ProductManagement from './components/ProductManagement/ProductManagement';
 
 // Import file CSS Module mới cho App
 import styles from './App.module.css';

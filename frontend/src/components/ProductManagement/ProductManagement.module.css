@@ -395,3 +395,24 @@
     min-width: 120px;
     display: inline-block;
 }
+/* Thêm vào file ProductManagement.module.css */
+
+.viewDetails p {
+  /* Biến mỗi dòng <p> thành 1 lưới (grid) 2 cột */
+  display: grid;
+
+  /* Cột 1 (Label) rộng 120px, Cột 2 (Value) lấy hết phần còn lại */
+  grid-template-columns: 120px 1fr;
+
+  /* Khoảng cách giữa 2 cột */
+  gap: 10px;
+
+  /* Đảm bảo chữ tự động xuống hàng nếu quá dài */
+  word-break: break-word;
+}
+
+.viewDetails p strong {
+  /* Giữ cho label (chữ đậm) ở cột 1 */
+  font-weight: 600;
+  /* (Không cần code gì thêm, Grid sẽ tự xử lý) */
+}

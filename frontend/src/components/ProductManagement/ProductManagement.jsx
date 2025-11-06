@@ -7,7 +7,7 @@ import {
     addProduct,
     updateProduct,
     deleteProduct
-} from '../services/productService'; // <--- TỪ FILE SERVICE CỦA BẠN
+} from '../../services/productService'; //
 
 // Import các icon từ 'react-icons'
 import {
@@ -24,7 +24,7 @@ const emptyForm = {
     name: '',
     price: '',
     quantity: '',
-    category: '',
+    categoryName: '',
     description: '',
 };
 
@@ -38,7 +38,6 @@ function ProductManagement() {
 
     // --- STATE MỚI ---
     const [selectedCategory, setSelectedCategory] = useState('Tất cả');
-
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [openViewDialog, setOpenViewDialog] = useState(false);
@@ -51,12 +50,7 @@ function ProductManagement() {
         setApiError(null); // Reset lỗi cũ
         try {
             const response = await getProducts();
-
-            // =======================================================
-            // <--- SỬA LỖI 1 TẠI ĐÂY ---
-            // Backend trả về đối tượng { content: [...] }, ta lấy mảng "content"
             setProducts(response.data.content || []);
-            // =======================================================
 
         } catch (error) {
             console.error("Lỗi khi tải sản phẩm:", error);
@@ -76,7 +70,8 @@ function ProductManagement() {
         if (!Array.isArray(products)) {
             return ['Tất cả'];
         }
-        const allCategories = products.map(p => p.category);
+        // <--- SỬA 2 --- (File của bạn đã đúng)
+        const allCategories = products.map(p => p.categoryName);
         const uniqueCategories = [...new Set(allCategories)];
         return ['Tất cả', ...uniqueCategories];
     }, [products]); // Logic này vẫn đúng
@@ -96,7 +91,9 @@ function ProductManagement() {
 
         // 1. Lọc theo Category
         if (selectedCategory !== 'Tất cả') {
-            filtered = filtered.filter(product => product.category === selectedCategory);
+            // <--- SỬA 3 ---
+            // So sánh với categoryName vì selectedCategory là một categoryName
+            filtered = filtered.filter(product => product.categoryName === selectedCategory);
         }
 
         // 2. Lọc theo Search Term
@@ -114,7 +111,8 @@ function ProductManagement() {
         // ... logic validate của bạn vẫn đúng ...
         const newErrors = {};
         if (!formData.name) newErrors.name = "Tên sản phẩm là bắt buộc";
-        if (!formData.category) newErrors.category = "Loại sản phẩm là bắt buộc";
+        // <--- SỬA 4 ---
+        if (!formData.categoryName) newErrors.categoryName = "Loại sản phẩm là bắt buộc";
         if (!formData.quantity || formData.quantity <= 0) newErrors.quantity = "Số lượng phải lớn hơn 0";
         if (!formData.price || parseFloat(formData.price) <= 0) newErrors.price = "Giá phải lớn hơn 0";
         setErrors(newErrors);
@@ -138,7 +136,9 @@ function ProductManagement() {
             ...formData,
             price: parseFloat(formData.price),
             quantity: parseInt(formData.quantity, 10),
+            category: formData.categoryName,
         };
+
 
         try {
             await addProduct(newProductData); // Gọi API
@@ -181,6 +181,7 @@ function ProductManagement() {
             ...formData,
             price: parseFloat(formData.price),
             quantity: parseInt(formData.quantity, 10),
+            category: formData.categoryName, // Tương tự như khi tạo mới
         };
 
         try {
@@ -242,17 +243,19 @@ function ProductManagement() {
                 {errors.name && <span className={styles.helperText}>{errors.name}</span>}
             </div>
 
+            {/* === SỬA KHỐI NÀY === */}
             <div className={styles.formGroup}>
-                <label htmlFor={formData.id ? 'category-edit' : 'category'} className={styles.label}>Loại sản phẩm <span className={styles.requiredStar}>*</span></label>
+                {/* <--- SỬA 5 --- */}
+                <label htmlFor={formData.id ? 'categoryName-edit' : 'categoryName'} className={styles.label}>Loại sản phẩm <span className={styles.requiredStar}>*</span></label>
                 <input
-                    id={formData.id ? 'category-edit' : 'category'}
-                    name="category"
+                    id={formData.id ? 'categoryName-edit' : 'categoryName'} // <--- SỬA 6 ---
+                    name="categoryName" // <--- SỬA 7 ---
                     type="text"
-                    className={`${styles.input} ${errors.category ? styles.inputError : ''}`}
-                    value={formData.category}
+                    className={`${styles.input} ${errors.categoryName ? styles.inputError : ''}`} // <--- SỬA 8 ---
+                    value={formData.categoryName} // <--- SỬA 9 ---
                     onChange={handleFormChange}
                 />
-                {errors.category && <span className={styles.helperText}>{errors.category}</span>}
+                {errors.categoryName && <span className={styles.helperText}>{errors.categoryName}</span>} {/* <--- SỬA 10 --- */}
             </div>
 
             <div className={styles.formGroup}>
@@ -320,10 +323,7 @@ function ProductManagement() {
                         <select
                             className={styles.categorySelect}
                             value={selectedCategory}
-                            // =======================================================
-                            // <--- SỬA LỖI 2 TẠI ĐÂY ---
-                            onChange={(e) => setSelectedCategory(e.target.value)} // Sửa e.f.value thành e.target.value
-                        // =======================================================
+                            onChange={(e) => setSelectedCategory(e.target.value)} // File của bạn đã sửa đúng
                         >
                             {categories.map(category => (
                                 <option key={category} value={category}>
@@ -373,7 +373,8 @@ function ProductManagement() {
                                 <tr key={product.id} className={styles.tableRow}>
                                     <td className={styles.tableCell}>{product.id}</td>
                                     <td className={styles.tableCell}>{product.name}</td>
-                                    <td className={styles.tableCell}>{product.category}</td>
+                                    {/* <--- SỬA 11 (Lỗi chính) --- */}
+                                    <td className={styles.tableCell}>{product.categoryName}</td>
                                     <td className={styles.tableCell}>{parseFloat(product.price).toLocaleString()} VNĐ</td>
                                     <td className={styles.tableCell}>{product.quantity}</td>
                                     <td className={styles.tableCell}>
@@ -438,7 +439,8 @@ function ProductManagement() {
                         <div className={styles.viewDetails}>
                             <p><strong>ID:</strong> {currentProduct.id}</p>
                             <p><strong>Tên sản phẩm:</strong> {currentProduct.name}</p>
-                            <p><strong>Loại sản phẩm:</strong> {currentProduct.category}</p>
+                            {/* <--- SỬA 12 --- */}
+                            <p><strong>Loại sản phẩm:</strong> {currentProduct.categoryName}</p>
                             <p><strong>Giá:</strong> {parseFloat(currentProduct.price).toLocaleString()} VNĐ</p>
                             <p><strong>Số lượng:</strong> {currentProduct.quantity}</p>
                             <p><strong>Mô tả:</strong> {currentProduct.description || '(Không có mô tả)'}</p>
