@@ -1,0 +1,397 @@
+/* --- Kế thừa style từ Login --- */
+.formGroup,
+.label,
+.requiredStar,
+.input,
+.inputError,
+.helperText,
+.button,
+.buttonPrimary,
+.buttonSecondary {
+    font-family: Arial, sans-serif;
+}
+
+.formGroup {
+    margin-bottom: 15px;
+}
+
+.label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #555;
+    font-size: 14px;
+}
+
+.requiredStar {
+    color: #d32f2f;
+}
+
+.input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.inputError {
+    border-color: #d32f2f;
+}
+
+.helperText {
+    color: #d32f2f;
+    font-size: 12px;
+    margin-top: 3px;
+    display: block;
+}
+
+/* --- Nút bấm --- */
+.button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    /* Khoảng cách giữa icon và chữ */
+    height: 39px;
+    /* Đồng bộ chiều cao */
+    box-sizing: border-box;
+}
+
+.buttonPrimary {
+    background-color: #007bff;
+    color: white;
+}
+
+.buttonPrimary:hover {
+    background-color: #0056b3;
+}
+
+.buttonSecondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.buttonSecondary:hover {
+    background-color: #5a6268;
+}
+
+/* --- CLASS CHO NÚT XÓA --- */
+.buttonDanger {
+    background-color: #dc3545;
+    /* Màu đỏ */
+    color: white;
+}
+
+.buttonDanger:hover {
+    background-color: #c82333;
+    /* Màu đỏ đậm hơn */
+}
+
+/* --- Layout chung --- */
+.container {
+    font-family: Arial, sans-serif;
+    width: 100%;
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.title {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.paper {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Toolbar --- */
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    /* Cho phép xuống hàng trên mobile */
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 20px;
+    gap: 20px;
+    /* Thêm khoảng cách giữa các nhóm */
+}
+
+/* Nhóm các điều khiển lọc */
+.filterControls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    /* Khoảng cách giữa ô tìm kiếm và dropdown */
+    align-items: center;
+    flex: 1 1 60%;
+    /* Cho phép chiếm nhiều không gian */
+    min-width: 300px;
+    /* Đảm bảo không bị bóp quá nhỏ */
+}
+
+.searchBox {
+    min-width: 250px;
+    /* Đặt chiều rộng tối thiểu */
+    flex: 1;
+    /* Cho phép co giãn */
+}
+
+.searchInputWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 20px;
+    /* Tăng kích thước icon */
+    display: flex;
+    /* Căn giữa icon */
+    align-items: center;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 10px 12px 10px 40px;
+    /* Chỗ cho icon */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+    height: 39px;
+    /* Đồng bộ chiều cao */
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+/* Kiểu cho Dropdown lọc */
+.categoryFilter {
+    min-width: 200px;
+    flex-basis: 200px;
+    /* Đặt chiều rộng cơ bản */
+    flex-grow: 1;
+    /* Cho phép co giãn */
+}
+
+.categorySelect {
+    width: 100%;
+    padding: 0 12px;
+    /* Điều chỉnh padding */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+    background-color: white;
+    cursor: pointer;
+    height: 39px;
+    /* Đồng bộ chiều cao */
+    appearance: none;
+    /* Xóa giao diện mặc định */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.6-3.6%205.4-7.9%205.4-12.9%200-5-1.8-9.2-5.4-12.7z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 10px;
+}
+
+.categorySelect:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.addButtonBox {
+    margin-left: 0;
+    /* Xóa margin cũ */
+    flex-shrink: 0;
+    /* Không cho nút bị bóp lại */
+}
+
+
+/* --- Bảng --- */
+.tableContainer {
+    width: 100%;
+    overflow-x: auto;
+    /* Cho phép cuộn ngang trên di động */
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tableHead {
+    background-color: #f5f5f5;
+}
+
+.tableCell {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+    font-size: 14px;
+    white-space: nowrap;
+    /* Ngăn vỡ dòng */
+}
+
+/* Ghi đè cho tiêu đề */
+.tableHead .tableCell {
+    font-weight: bold;
+    color: #333;
+}
+
+.tableRow:hover {
+    background-color: #f9f9f9;
+}
+
+.tableCellLoading {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+}
+
+/* --- Nút Icon --- */
+.iconButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    margin: 0 2px;
+    transition: background-color 0.2s;
+
+    /* Căn chỉnh icon mới cho đẹp */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    /* Đặt kích thước icon */
+    line-height: 1;
+    /* Đảm bảo icon không bị lệch */
+}
+
+.iconButton:hover {
+    background-color: #eee;
+}
+
+.iconView {
+    color: #007bff;
+}
+
+.iconEdit {
+    color: #28a745;
+}
+
+.iconDelete {
+    color: #dc3545;
+}
+
+.icon {
+    font-size: 16px;
+    /* Căn chỉnh icon trong nút */
+}
+
+/* --- Dialog (Modal) --- */
+.dialogOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Lớp phủ mờ */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.dialogOpen {
+    visibility: visible;
+    opacity: 1;
+}
+
+.dialogContent {
+    background-color: white;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px;
+    z-index: 1001;
+
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+    max-height: 90vh;
+    /* Thêm chiều cao tối đa */
+    overflow-y: auto;
+    /* Cho phép cuộn form */
+}
+
+.dialogOpen .dialogContent {
+    transform: scale(1);
+}
+
+.dialogTitle {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.dialogSubtitle {
+    font-size: 14px;
+    color: #666;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.dialogActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
+
+/* Dialog Xem chi tiết */
+.viewDetails p {
+    margin: 10px 0;
+    font-size: 16px;
+    line-height: 1.5;
+    word-break: break-word;
+    /* Chống tràn text */
+}
+
+.viewDetails p strong {
+    color: #333;
+    min-width: 120px;
+    display: inline-block;
+}
