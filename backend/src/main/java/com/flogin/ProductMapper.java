@@ -13,13 +13,19 @@ public class ProductMapper {
             return null;
         }
 
-        return new ProductDTO(
-                productEntity.getName(),
-                productEntity.getPrice(),
-                productEntity.getQuantity(),
-                productEntity.getDescription(),
-                productEntity.getCategory().getId()
-        );
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setId(productEntity.getId());
+        productDTO.setName(productEntity.getName());
+        productDTO.setPrice(productEntity.getPrice());
+        productDTO.setQuantity(productEntity.getQuantity());
+        productDTO.setDescription(productEntity.getDescription());
+
+        CategoryEntity categoryEntity = productEntity.getCategory();
+        if(categoryEntity != null){
+            productDTO.setCategoryId(categoryEntity.getId());
+            productDTO.setCategoryName(categoryEntity.getName());
+        }
+        return productDTO;
     }
 
     public ProductEntity toEntity(ProductDTO productDTO, CategoryEntity categoryEntity){
@@ -27,12 +33,14 @@ public class ProductMapper {
             return null;
         }
 
-        return new ProductEntity(
-                productDTO.getName(),
-                productDTO.getPrice(),
-                productDTO.getQuantity(),
-                productDTO.getDescription(),
-                categoryEntity
-        );
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setId(productDTO.getId());
+        productEntity.setName(productDTO.getName());
+        productEntity.setPrice(productDTO.getPrice());
+        productEntity.setQuantity(productDTO.getQuantity());
+        productEntity.setDescription(productDTO.getDescription());
+        productEntity.setCategory(categoryEntity);
+
+        return productEntity;
     }
 }
