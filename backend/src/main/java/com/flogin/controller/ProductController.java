@@ -38,12 +38,12 @@ public class ProductController {
     GIỮ các kiểm tra if (var == null) thủ công bên trong các phương thức của ProductService.
      */
     @PostMapping
-    public ResponseEntity<ProductEntity> createProduct(
+    public ResponseEntity<ProductDTO> createProduct(
             @Valid @RequestBody ProductDTO productDTO
     ){
-        ProductEntity newProductEnity = productService.createProduct(productDTO);
+        ProductDTO newProductDTO = productService.createProduct(productDTO);
 
-        return new ResponseEntity<>(newProductEnity, HttpStatus.CREATED);
+        return new ResponseEntity<>(newProductDTO, HttpStatus.CREATED);
     }
 
     @GetMapping

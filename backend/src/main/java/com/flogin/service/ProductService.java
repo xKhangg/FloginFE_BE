@@ -31,7 +31,7 @@ public class ProductService {
     //Phải kiểm tra tham số truyền vào có null không.
     //Đảm bảo toàn vẹn dữ liệu (Thành công hết, nếu sai 1 bước thì rollback)
     @Transactional
-    public ProductEntity createProduct(ProductDTO productDTO){
+    public ProductDTO createProduct(ProductDTO productDTO){
 
         if(productDTO == null){
             throw new IllegalArgumentException("Tham số truyền vào productDTO không được null");
@@ -50,7 +50,9 @@ public class ProductService {
         productEntity.setDescription(productDTO.getDescription());
         productEntity.setCategory(categoryEntity);
 
-        return productRepository.save(productEntity);
+        ProductEntity savedProductEntity = productRepository.save(productEntity);
+
+        return productMapper.toDTO(savedProductEntity);
     }
 
     /*
@@ -146,6 +148,7 @@ public class ProductService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy sản phẩm với ID: " + productId
                 ));
+
         productRepository.delete(productEntity);
     }
 }
