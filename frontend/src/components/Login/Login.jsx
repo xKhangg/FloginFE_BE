@@ -2,29 +2,11 @@ import React, { useState } from 'react';
 // Import hooks
 import { useNavigate } from 'react-router-dom';
 
-// import { validateLoginForm } from '../utils/validation'; 
-// import { login } from '../services/authService'; 
+// <--- BƯỚC 1: IMPORT TỪ FILE NGOÀI ---
+import { validateLoginForm } from '../../utils/loginValidation'; // <--- Tách ra utils
+import { login } from '../../services/authService'; // <--- Tách ra service
 import styles from './Login.module.css';
 
-// --- Logic giả lập (Giữ nguyên) ---
-const validateLoginForm = ({ username, password }) => {
-    const errors = {};
-    if (!username) errors.username = "Tên đăng nhập là bắt buộc";
-    if (!password) errors.password = "Mật khẩu là bắt buộc";
-    return errors;
-};
-const login = (username, password) => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            if (username === "admin" && password === "123") {
-                resolve({ data: { token: "fake-admin-token-123" } });
-            } else {
-                reject(new Error("Lỗi đăng nhập"));
-            }
-        }, 500);
-    });
-};
-// --- Hết logic giả lập ---
 
 
 function Login() {
@@ -41,6 +23,8 @@ function Login() {
         event.preventDefault();
         setApiError('');
 
+        // <--- BƯỚC 3: HÀM NÀY GIỜ GỌI BẢN IMPORT ---
+        // (Nó sẽ dùng các rule validation phức tạp từ file utils)
         const validationErrors = validateLoginForm({ username, password });
         setErrors(validationErrors);
         if (Object.keys(validationErrors).length > 0) {
@@ -49,7 +33,8 @@ function Login() {
 
         setIsLoading(true);
         try {
-            // Gọi API
+            // <--- BƯỚC 4: HÀM NÀY GIỜ GỌI BẢN IMPORT ---
+            // (Nó sẽ gọi hàm mock trong authService.js)
             const response = await login(username, password);
             console.log('Đăng nhập thành công:', response.data);
 
@@ -61,7 +46,8 @@ function Login() {
 
         } catch (error) {
             console.error('Lỗi đăng nhập:', error);
-            setApiError('Tên đăng nhập hoặc mật khẩu không chính xác.');
+            // Lấy thông báo lỗi từ API giả
+            setApiError(error.message || 'Tên đăng nhập hoặc mật khẩu không chính xác.');
         }
         setIsLoading(false);
     };
@@ -70,7 +56,6 @@ function Login() {
         <div className={styles.container}>
             <div className={styles.loginBox}>
                 <h1 className={styles.title}>Đăng nhập</h1>
-
                 <form onSubmit={handleSubmit} noValidate className={styles.form}>
 
                     {apiError && <div className={styles.apiError}>{apiError}</div>}

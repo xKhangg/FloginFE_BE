@@ -70,11 +70,11 @@ function ProductManagement() {
         if (!Array.isArray(products)) {
             return ['Tất cả'];
         }
-        // <--- SỬA 2 --- (File của bạn đã đúng)
+
         const allCategories = products.map(p => p.categoryName);
         const uniqueCategories = [...new Set(allCategories)];
         return ['Tất cả', ...uniqueCategories];
-    }, [products]); // Logic này vẫn đúng
+    }, [products]);
 
     const handleFormChange = (event) => {
         const { name, value } = event.target;
@@ -108,10 +108,9 @@ function ProductManagement() {
     }, [searchTerm, selectedCategory, products]);
 
     const validateForm = () => {
-        // ... logic validate của bạn vẫn đúng ...
+
         const newErrors = {};
         if (!formData.name) newErrors.name = "Tên sản phẩm là bắt buộc";
-        // <--- SỬA 4 ---
         if (!formData.categoryName) newErrors.categoryName = "Loại sản phẩm là bắt buộc";
         if (!formData.quantity || formData.quantity <= 0) newErrors.quantity = "Số lượng phải lớn hơn 0";
         if (!formData.price || parseFloat(formData.price) <= 0) newErrors.price = "Giá phải lớn hơn 0";
@@ -228,7 +227,7 @@ function ProductManagement() {
             {/* --- 10. THÊM HIỂN THỊ LỖI API TRONG FORM --- */}
             {errors.api && <div className={styles.apiError}>{errors.api}</div>}
 
-            {/* ... các trường input của bạn giữ nguyên ... */}
+
             <div className={styles.formGroup}>
                 <label htmlFor={formData.id || 'name'} className={styles.label}>Tên sản phẩm <span className={styles.requiredStar}>*</span></label>
                 <input
@@ -243,16 +242,16 @@ function ProductManagement() {
                 {errors.name && <span className={styles.helperText}>{errors.name}</span>}
             </div>
 
-            {/* === SỬA KHỐI NÀY === */}
+
             <div className={styles.formGroup}>
-                {/* <--- SỬA 5 --- */}
+
                 <label htmlFor={formData.id ? 'categoryName-edit' : 'categoryName'} className={styles.label}>Loại sản phẩm <span className={styles.requiredStar}>*</span></label>
                 <input
-                    id={formData.id ? 'categoryName-edit' : 'categoryName'} // <--- SỬA 6 ---
-                    name="categoryName" // <--- SỬA 7 ---
+                    id={formData.id ? 'categoryName-edit' : 'categoryName'} //
+                    name="categoryName"
                     type="text"
-                    className={`${styles.input} ${errors.categoryName ? styles.inputError : ''}`} // <--- SỬA 8 ---
-                    value={formData.categoryName} // <--- SỬA 9 ---
+                    className={`${styles.input} ${errors.categoryName ? styles.inputError : ''}`} //
+                    value={formData.categoryName} //
                     onChange={handleFormChange}
                 />
                 {errors.categoryName && <span className={styles.helperText}>{errors.categoryName}</span>} {/* <--- SỬA 10 --- */}
