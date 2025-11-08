@@ -43,14 +43,14 @@ export const validatePassword = (password) => {
  * Hàm này để component Login.jsx gọi,
  * nó sẽ tổng hợp lỗi từ 2 hàm con ở trên.
  */
-export const validateLoginForm = ({ username, password }) => {
-    const errors = {};
-
-    const usernameError = validateUsername(username);
-    if (usernameError) errors.username = usernameError;
-
-    const passwordError = validatePassword(password);
-    if (passwordError) errors.password = passwordError;
-
-    return errors;
-};
+//export const validateLoginForm = ({ username, password }) => {
+//    const errors = {};
+//
+//    const usernameError = validateUsername(username);
+//    if (usernameError) errors.username = usernameError;
+//
+//    const passwordError = validatePassword(password);
+//    if (passwordError) errors.password = passwordError;
+//
+//    return errors;
+//};
