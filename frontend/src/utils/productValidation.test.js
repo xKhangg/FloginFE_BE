@@ -2,7 +2,7 @@ import { validateProduct } from './productValidation';
 
 describe('Product Validation Tests', () => {
 
-  // Test case hợp lệ - ĐÃ CẬP NHẬT VỚI DỮ LIỆU SÁCH
+  // Test case hợp lệ - Dữ liệu sách
   test('TC1: Product (Sách) hợp lệ - không có lỗi', () => {
     const product = {
       name: 'Sherlock Holmes Toàn Tập',
@@ -12,14 +12,13 @@ describe('Product Validation Tests', () => {
       description: 'Tuyển tập các vụ án kinh điển của Sherlock Holmes.'
     };
     const errors = validateProduct(product);
-    // Kiểm tra rằng object 'errors' không có bất kỳ key nào
     expect(Object.keys(errors).length).toBe(0);
   });
 
   // Test case hợp lệ khác (sách Dế Mèn)
   test('TC1_EXTRA: Product (Sách) hợp lệ khác - không có lỗi', () => {
     const product = {
-      name: 'Dế Mèn Phiêu Lưu Ký',
+      name: 'Dế Mèn Phiêu Lưiu Ký',
       price: 80000,
       quantity: 100,
       category: 'Thiếu nhi',
@@ -51,50 +50,50 @@ describe('Product Validation Tests', () => {
 
   // === Test Price ===
   test('TC5: Price âm - nên trả về lỗi', () => {
-    const product = { name: 'Laptop', price: -1000, quantity: 10, category: 'Test' };
+    const product = { name: 'Một cuốn sách', price: -1000, quantity: 10, category: 'Test' };
     const errors = validateProduct(product);
     expect(errors.price).toBe('Giá sản phẩm phải lớn hơn 0');
   });
 
   test('TC6: Price bằng 0 - nên trả về lỗi', () => {
-    const product = { name: 'Laptop', price: 0, quantity: 10, category: 'Test' };
+    const product = { name: 'Một cuốn sách', price: 0, quantity: 10, category: 'Test' };
     const errors = validateProduct(product);
     expect(errors.price).toBe('Giá sản phẩm phải lớn hơn 0');
   });
 
   test('TC7: Price quá lớn (boundary) - nên trả về lỗi', () => {
-    const product = { name: 'Laptop', price: 1000000000, quantity: 10, category: 'Test' };
+    const product = { name: 'Một cuốn sách', price: 1000000000, quantity: 10, category: 'Test' };
     const errors = validateProduct(product);
     expect(errors.price).toBe('Giá sản phẩm quá lớn (tối đa 999,999,999)');
   });
 
   test('TC8: Price không phải là số - nên trả về lỗi', () => {
-    const product = { name: 'Laptop', price: 'abc', quantity: 10, category: 'Test' };
+    const product = { name: 'Một cuốn sách', price: 'abc', quantity: 10, category: 'Test' };
     const errors = validateProduct(product);
     expect(errors.price).toBe('Giá sản phẩm phải là một con số');
   });
 
   // === Test Quantity ===
   test('TC9: Quantity âm - nên trả về lỗi', () => {
-    const product = { name: 'Laptop', price: 1000, quantity: -1, category: 'Test' };
+    const product = { name: 'Một cuốn sách', price: 1000, quantity: -1, category: 'Test' };
     const errors = validateProduct(product);
     expect(errors.quantity).toBe('Số lượng không được nhỏ hơn 0');
   });
 
   test('TC10: Quantity là số thập phân - nên trả về lỗi', () => {
-    const product = { name: 'Laptop', price: 1000, quantity: 1.5, category: 'Test' };
+    const product = { name: 'Một cuốn sách', price: 1000, quantity: 1.5, category: 'Test' };
     const errors = validateProduct(product);
     expect(errors.quantity).toBe('Số lượng phải là số nguyên');
   });
 
   test('TC11: Quantity quá lớn (boundary) - nên trả về lỗi', () => {
-    const product = { name: 'Laptop', price: 1000, quantity: 100000, category: 'Test' };
+    const product = { name: 'Một cuốn sách', price: 1000, quantity: 100000, category: 'Test' };
     const errors = validateProduct(product);
     expect(errors.quantity).toBe('Số lượng quá lớn (tối đa 99,999)');
   });
 
   test('TC12: Quantity hợp lệ (boundary 0) - không có lỗi', () => {
-    const product = { name: 'Laptop', price: 1000, quantity: 0, category: 'Test' };
+    const product = { name: 'Một cuốn sách', price: 1000, quantity: 0, category: 'Test' };
     const errors = validateProduct(product);
     expect(errors.quantity).toBeUndefined(); // Không có lỗi quantity
   });
@@ -102,14 +101,14 @@ describe('Product Validation Tests', () => {
   // === Test Description ===
   test('TC13: Description quá dài - nên trả về lỗi', () => {
     const longDesc = 'a'.repeat(501);
-    const product = { name: 'Laptop', price: 1000, quantity: 10, category: 'Test', description: longDesc };
+    const product = { name: 'Một cuốn sách', price: 1000, quantity: 10, category: 'Test', description: longDesc };
     const errors = validateProduct(product);
     expect(errors.description).toBe('Mô tả không được vượt quá 500 ký tự');
   });
 
   // === Test Category ===
   test('TC14: Category rỗng - nên trả về lỗi', () => {
-    const product = { name: 'Laptop', price: 1000, quantity: 10, category: '' };
+    const product = { name: 'Một cuốn sách', price: 1000, quantity: 10, category: '' };
     const errors = validateProduct(product);
     expect(errors.category).toBe('Vui lòng chọn danh mục sản phẩm');
   });
