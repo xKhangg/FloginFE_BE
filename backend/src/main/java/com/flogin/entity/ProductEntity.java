@@ -25,13 +25,13 @@ public class ProductEntity {
     @Max(value = 999_999_999, message = "Giá sản phẩm tối đa 999,999,999")
     // 'nullable = false' bắt buộc sản phẩm phải có giá
     @Column(nullable = false)
-    private double price;
+    private Double price;
 
     //@Min @Max kiểm tra giá trị của số
     @Min(value = 0, message = "Số lượng sản phẩm không được âm")
     @Max(value = 99_999, message = "Số lượng sản phẩm tối đa 99,999")
     @Column(nullable = false)
-    private int quantity;
+    private Integer quantity;
 
     @Size(max = 500, message = "Mô tả sản phẩm tối đa 500 ký tự")
     @Column
@@ -51,11 +51,23 @@ public class ProductEntity {
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity category;
 
+    public ProductEntity() {
+    }
+
+    public ProductEntity(Integer id, String name, Double price, Integer quantity, String description, CategoryEntity category) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+        this.description = description;
+        this.category = category;
+    }
+
     public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -73,22 +85,22 @@ public class ProductEntity {
         this.name = name;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(Double price) {
         if(price <= 0 || price > 999_999_999){
             throw new IllegalArgumentException("Giá sản phẩm phải lớn hơn 0 và tối đa 999,999,999");
         }
         this.price = price;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         if(quantity < 0 || quantity > 99_999){
             throw new IllegalArgumentException("Số lượng sản phẩm khng được âm và tối đa 99,999");
         }

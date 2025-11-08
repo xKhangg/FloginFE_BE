@@ -13,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
-//import java.util.List;
+import java.util.List;
 
 @Service
 public class ProductService {
@@ -61,19 +61,19 @@ public class ProductService {
     (ngay cả khi bạn đã dùng JOIN FETCH, đây vẫn là một "lưới an toàn" tốt).
      */
     @Transactional(readOnly = true)
-//    public List<ProductDTO> getAllProducts(Integer categoryId){
-//        List<ProductEntity> productEntityList;
-//        if(categoryId == null){
-//            productEntityList = productRepository.findAllWithCategory();
-//        }
-//        else{
-//            productEntityList = productRepository.findAllByCategoryId(categoryId);
-//        }
-//
-//        return productEntityList.stream().map(productMapper::toDTO).toList();
-//    }
+    public List<ProductDTO> getAllProducts(Integer categoryId){
+        List<ProductEntity> productEntityList;
+        if(categoryId == null){
+            productEntityList = productRepository.findAllWithCategory();
+        }
+        else{
+            productEntityList = productRepository.findAllByCategoryId(categoryId);
+        }
+
+        return productEntityList.stream().map(productMapper::toDTO).toList();
+    }
     //Phân trang
-    public Page<ProductDTO> getAllProducts(Integer categoryId, int page, int pageSize){
+    public Page<ProductDTO> getAllProductsPaginated(Integer categoryId, int page, int pageSize){
 
         // 1. Tạo đối tượng Pageable (chỉ định trang nào, bao nhiêu phần tử)
         Pageable pageable = PageRequest.of(page, pageSize);
@@ -94,7 +94,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductDTO getProduct(Integer productId){
+    public ProductDTO getProductByID(Integer productId){
         ProductEntity productEntity = productRepository.findById(productId).orElseThrow(
                 () -> new EntityNotFoundException("Không tìm thấy sản phẩm với ID: " + productId)
         );
