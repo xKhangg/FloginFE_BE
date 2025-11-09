@@ -40,6 +40,14 @@
     ]
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.28.5"
+    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-react": "^7.28.5",
+    "identity-obj-proxy": "^3.0.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "moduleNameMapper": {
+      "\\.(css|less|scss|sass)$": "identity-obj-proxy"
+    }
   }
 }

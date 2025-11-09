@@ -2,8 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom'; // Cần thiết vì Login.jsx dùng useNavigate
-import Login from '../components/Login/Login';
-import * as authService from '../services/authService';
+import Login from '../components/Login/Login'; // Điều chỉnh đường dẫn này tới file Login.jsx của bạn
+import * as authService from '../services/authService'; // Điều chỉnh đường dẫn này tới file authService.js của bạn
 
 // 2. Mock module 'react-router-dom' để theo dõi hàm navigate
 const mockNavigate = jest.fn();
@@ -13,7 +13,6 @@ jest.mock('react-router-dom', () => ({
 }));
 
 // 3. Mock module validation
-// Đã cập nhật: Đường dẫn từ 'src/tests/' đến 'src/utils/loginValidation.js'
 // (Giả sử file validation của bạn nằm trong 'src/utils/')
 jest.mock('../utils/loginValidation', () => ({
   validateUsername: (user) => {
@@ -34,6 +33,7 @@ let loginSpy;
 beforeEach(() => {
   jest.clearAllMocks();
   localStorage.clear();
+  // Spy vào hàm 'login' mà file authService.js của bạn export
   loginSpy = jest.spyOn(authService, 'login');
 });
 
@@ -61,6 +61,7 @@ describe('Login Component Integration Tests (Dựa trên file Login.jsx)', () =>
    */
   test('Hiển thị lỗi API khi đăng nhập thất bại', async () => {
     const errorMessage = "Tên đăng nhập hoặc mật khẩu không chính xác.";
+    // Mock hàm 'login' trả về lỗi (từ chối promise)
     loginSpy.mockRejectedValue(new Error(errorMessage));
 
     render(<Login />, { wrapper: BrowserRouter });
@@ -78,32 +79,33 @@ describe('Login Component Integration Tests (Dựa trên file Login.jsx)', () =>
   });
 
   /**
-   * Test kịch bản 3: Đăng nhập thành công (Happy Path)
+   * Test kịch bản 3: Đăng nhập thành công (Happy Path) - ĐÃ CẬP NHẬT
    */
   test('Đăng nhập thành công, lưu token và chuyển hướng', async () => {
     const successResponse = {
       data: {
         token: "mock-admin-token-xyz789",
-        user: { username: "testuser" }
+        user: { username: "admin" } // Cập nhật user
       }
     };
+    // Mock hàm 'login' trả về thành công
     loginSpy.mockResolvedValue(successResponse);
 
     const localStorageSpy = jest.spyOn(Storage.prototype, 'setItem');
     render(<Login />, { wrapper: BrowserRouter });
 
-    // Dùng credentials hợp lệ từ file authService.js
-    fireEvent.change(screen.getByLabelText(/tên đăng nhập/i), { target: { value: 'testuser' } });
-    fireEvent.change(screen.getByLabelText(/mật khẩu/i), { target: { value: 'Test123' } });
+
+    fireEvent.change(screen.getByLabelText(/tên đăng nhập/i), { target: { value: 'admin' } });
+    fireEvent.change(screen.getByLabelText(/mật khẩu/i), { target: { value: 'admin123' } });
     fireEvent.click(screen.getByRole('button', { name: /đăng nhập/i }));
 
     await waitFor(() => {
-      expect(loginSpy).toHaveBeenCalledWith('testuser', 'Test123');
+      // Đảm bảo 'expect' khớp với 2 dòng 'fireEvent' ở trên
+      expect(loginSpy).toHaveBeenCalledWith('admin', 'admin123');
     });
 
 
     expect(localStorageSpy).toHaveBeenCalledWith('userToken', successResponse.data.token);
-
     expect(mockNavigate).toHaveBeenCalledWith('/products');
   });
 });
