@@ -1,4 +1,4 @@
-import { validateProduct } from './productValidation';
+import { validateProduct } from '../utils/productValidation';
 
 describe('Product Validation Tests', () => {
 
@@ -18,7 +18,7 @@ describe('Product Validation Tests', () => {
   // Test case hợp lệ khác (sách Dế Mèn)
   test('TC1_EXTRA: Product (Sách) hợp lệ khác - không có lỗi', () => {
     const product = {
-      name: 'Dế Mèn Phiêu Lưiu Ký',
+      name: 'Dế Mèn Phiêu Lưu Ký',
       price: 80000,
       quantity: 100,
       category: 'Thiếu nhi',
