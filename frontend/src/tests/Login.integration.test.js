@@ -1,19 +1,19 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { BrowserRouter } from 'react-router-dom'; // Cần thiết vì Login.jsx dùng useNavigate
-import Login from '../components/Login/Login'; // Điều chỉnh đường dẫn này tới file Login.jsx của bạn
-import * as authService from '../services/authService'; // Điều chỉnh đường dẫn này tới file authService.js của bạn
+import Login from '../components/Login/Login'; // Cập nhật đúng đường dẫn tới Login.jsx
+import * as authService from '../services/authService'; // Cập nhật đúng đường dẫn tới authService.js
 
-// 2. Mock module 'react-router-dom' để theo dõi hàm navigate
+// --- MOCK REACT ROUTER DOM (fix lỗi Jest ESM) ---
 const mockNavigate = jest.fn();
+
 jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // Giữ lại các export gốc
-  useNavigate: () => mockNavigate, // Ghi đè useNavigate bằng mock
+  useNavigate: () => mockNavigate,
+  BrowserRouter: ({ children }) => <div>{children}</div>,
+  Link: ({ children, ...props }) => <a {...props}>{children}</a>,
 }));
 
-// 3. Mock module validation
-// (Giả sử file validation của bạn nằm trong 'src/utils/')
+// --- MOCK VALIDATION ---
 jest.mock('../utils/loginValidation', () => ({
   validateUsername: (user) => {
     if (!user) return 'Tên đăng nhập không được để trống';
@@ -27,23 +27,21 @@ jest.mock('../utils/loginValidation', () => ({
   },
 }));
 
-// 4. Mock authService
+// --- MOCK AUTH SERVICE ---
 let loginSpy;
 
 beforeEach(() => {
   jest.clearAllMocks();
   localStorage.clear();
-  // Spy vào hàm 'login' mà file authService.js của bạn export
   loginSpy = jest.spyOn(authService, 'login');
 });
 
-describe('Login Component Integration Tests (Dựa trên file Login.jsx)', () => {
-
+describe('Login Component Integration Tests (Login.jsx)', () => {
   /**
-   * Test kịch bản 1: Lỗi Validation
+   * Test 1: Hiển thị lỗi validation khi submit form rỗng
    */
   test('Hiển thị lỗi validation khi submit form rỗng', async () => {
-    render(<Login />, { wrapper: BrowserRouter });
+    render(<Login />);
 
     const submitButton = screen.getByRole('button', { name: /đăng nhập/i });
     fireEvent.click(submitButton);
@@ -57,21 +55,19 @@ describe('Login Component Integration Tests (Dựa trên file Login.jsx)', () =>
   });
 
   /**
-   * Test kịch bản 2: Lỗi API
+   * Test 2: Hiển thị lỗi API khi đăng nhập thất bại
    */
   test('Hiển thị lỗi API khi đăng nhập thất bại', async () => {
-    const errorMessage = "Tên đăng nhập hoặc mật khẩu không chính xác.";
-    // Mock hàm 'login' trả về lỗi (từ chối promise)
+    const errorMessage = 'Tên đăng nhập hoặc mật khẩu không chính xác.';
     loginSpy.mockRejectedValue(new Error(errorMessage));
 
-    render(<Login />, { wrapper: BrowserRouter });
+    render(<Login />);
 
     fireEvent.change(screen.getByLabelText(/tên đăng nhập/i), { target: { value: 'wronguser' } });
     fireEvent.change(screen.getByLabelText(/mật khẩu/i), { target: { value: 'wrongpass' } });
     fireEvent.click(screen.getByRole('button', { name: /đăng nhập/i }));
 
     await waitFor(() => {
-      // Tìm lỗi API dựa trên logic file Login.jsx
       expect(screen.getByText(errorMessage)).toBeInTheDocument();
     });
 
@@ -79,31 +75,27 @@ describe('Login Component Integration Tests (Dựa trên file Login.jsx)', () =>
   });
 
   /**
-   * Test kịch bản 3: Đăng nhập thành công (Happy Path) - ĐÃ CẬP NHẬT
+   * Test 3: Đăng nhập thành công
    */
   test('Đăng nhập thành công, lưu token và chuyển hướng', async () => {
     const successResponse = {
       data: {
-        token: "mock-admin-token-xyz789",
-        user: { username: "admin" } // Cập nhật user
-      }
+        token: 'mock-admin-token-xyz789',
+        user: { username: 'admin' },
+      },
     };
-    // Mock hàm 'login' trả về thành công
     loginSpy.mockResolvedValue(successResponse);
 
     const localStorageSpy = jest.spyOn(Storage.prototype, 'setItem');
-    render(<Login />, { wrapper: BrowserRouter });
-
+    render(<Login />);
 
     fireEvent.change(screen.getByLabelText(/tên đăng nhập/i), { target: { value: 'admin' } });
     fireEvent.change(screen.getByLabelText(/mật khẩu/i), { target: { value: 'admin123' } });
     fireEvent.click(screen.getByRole('button', { name: /đăng nhập/i }));
 
     await waitFor(() => {
-      // Đảm bảo 'expect' khớp với 2 dòng 'fireEvent' ở trên
       expect(loginSpy).toHaveBeenCalledWith('admin', 'admin123');
     });
-
 
     expect(localStorageSpy).toHaveBeenCalledWith('userToken', successResponse.data.token);
     expect(mockNavigate).toHaveBeenCalledWith('/products');

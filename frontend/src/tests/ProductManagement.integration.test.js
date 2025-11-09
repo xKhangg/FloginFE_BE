@@ -63,7 +63,7 @@ describe('ProductManagement Component Integration Tests', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Sherlock Holmes Toàn Tập')).toBeInTheDocument();
-      expect(screen.getByText('Dế Mèn Phiêu Lưiu Ký')).toBeInTheDocument();
+      expect(screen.getByText('Dế Mèn Phiêu Lưu Ký')).toBeInTheDocument();
     });
   });
 
