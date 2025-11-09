@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @DisplayName("Product Service Unit Tests")
@@ -36,7 +35,7 @@ public class ProductServiceUnitTest {
     @InjectMocks
     private ProductService productService;
 
-    //Mock Data
+    //Test Data
     private CategoryEntity categoryEntity;
     private ProductEntity productEntity;
     private ProductDTO productDTO;
@@ -68,7 +67,7 @@ public class ProductServiceUnitTest {
         productDTO.setPrice(100_000D);
         productDTO.setQuantity(10);
         productDTO.setDescription("Book1 for testing");
-        productDTO.setCategoryId(1);
+        productDTO.setCategoryId(categoryId);
 
         // --- Setup cho Phân trang ---
 
@@ -87,7 +86,7 @@ public class ProductServiceUnitTest {
     @DisplayName("Test Case 1: Tạo sản phẩm mới thành công")
     void testCreateProduct() {
         //ARRANGE
-        when(categoryRepository.findById(anyInt()))
+        when(categoryRepository.findById(eq(categoryId)))
                 .thenReturn(Optional.of(categoryEntity));
         when(productRepository.save(any(ProductEntity.class)))
                 .thenReturn(productEntity);
@@ -100,10 +99,18 @@ public class ProductServiceUnitTest {
 
         //ASSERT
         assertNotNull(result);
+        assertEquals(1, result.getId());
         assertEquals("Book1", result.getName());
+        assertEquals(100_000, result.getPrice());
+        assertEquals(10, result.getQuantity());
+        assertEquals("Book1 for testing", result.getDescription());
+        assertEquals(1, result.getCategoryId());
 
         //VERIFY
+        verify(categoryRepository, times(1)).findById(eq(categoryId));
         verify(productRepository, times(1)).save(any(ProductEntity.class));
+        verify(productMapper, times(1))
+                .toDTO(any(ProductEntity.class));
     }
 
     @Test
@@ -130,9 +137,9 @@ public class ProductServiceUnitTest {
         Hàm productRepository.findById(id) không trả về ProductEntity.
         Nó trả về Optional<ProductEntity> (một cái hộp có thể chứa ProductEntity).
          */
-        when(categoryRepository.findById(anyInt()))
+        when(categoryRepository.findById(eq(categoryId)))
                 .thenReturn(Optional.of(categoryEntity));
-        when(productRepository.findById(anyInt()))
+        when(productRepository.findById(eq(productId)))
                 .thenReturn(Optional.of(productEntity));
 
         when(productMapper.toDTO(any(ProductEntity.class)))
@@ -152,9 +159,9 @@ public class ProductServiceUnitTest {
 
         //VERIFY
         verify(categoryRepository, times(1))
-                .findById(eq(newProductDTO.getCategoryId()));
+                .findById(eq(categoryId));
         verify(productRepository, times(1))
-                .findById(eq(productDTO.getId()));
+                .findById(eq(productId));
 
         verify(productMapper, times(1))
                 .toDTO(any(ProductEntity.class));
@@ -187,9 +194,9 @@ public class ProductServiceUnitTest {
 
     @Test
     @DisplayName("Test Case 3: Lấy danh sách tất cả sản phẩm (phân trang) thành công")
-    void testGetAllProductsPaginated_AllCategoriesPaginated(){
+    void testGetAllProductsPaginated_AllCategories(){
         //ARRANGE
-        when(productRepository.findAllWithCategoryPaginated(any(Pageable.class)))
+        when(productRepository.findAllWithCategoryPaginated((any(Pageable.class))))
                 .thenReturn(productEntityPage);
         when(productMapper.toDTO(any(ProductEntity.class)))
                 .thenReturn(productDTO);
@@ -207,7 +214,9 @@ public class ProductServiceUnitTest {
 
         //VERIFY
         verify(productRepository, times(1)).findAllWithCategoryPaginated(any(Pageable.class));
-        verify(productRepository, never()).findAllByCategoryIdWithCategoryPaginated(any(), any(Pageable.class));
+        verify(productRepository, never()).findAllByCategoryIdWithCategoryPaginated(anyInt(), any(Pageable.class));
+        verify(productMapper, times(1))
+                .toDTO(any(ProductEntity.class));
     }
 
     @Test
@@ -233,6 +242,8 @@ public class ProductServiceUnitTest {
 
         //VERIFY
         verify(productRepository, times(1)).findById(eq(productId));
+        verify(productMapper, times(1))
+                .toDTO(any(ProductEntity.class));
     }
 
     @Test
@@ -248,6 +259,6 @@ public class ProductServiceUnitTest {
         assertDoesNotThrow(() -> productService.deleteProduct(productId));
 
         //VERIFY
-        verify(productRepository, times(1)).delete(eq(productEntity));
+        verify(productRepository, times(1)).delete(any(ProductEntity.class));
     }
 }
