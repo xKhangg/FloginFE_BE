@@ -72,6 +72,7 @@ public class ProductService {
 
         return productEntityList.stream().map(productMapper::toDTO).toList();
     }
+
     //Phân trang
     public Page<ProductDTO> getAllProductsPaginated(Integer categoryId, int page, int pageSize){
 

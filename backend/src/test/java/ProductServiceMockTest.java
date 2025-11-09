@@ -44,6 +44,8 @@ public class ProductServiceMockTest {
     private Page<ProductEntity> mockProductEntityPage;
     private Pageable pageable;
 
+    List<ProductEntity> productList;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -74,7 +76,7 @@ public class ProductServiceMockTest {
         pageable = PageRequest.of(0, 10);
 
         // 2. Tạo một danh sách Entity giả (nội dung của trang)
-        List<ProductEntity> productList = List.of(mockProductEntity); // Bạn có thể thêm nhiều product vào đây
+        productList = List.of(mockProductEntity); // Bạn có thể thêm nhiều product vào đây
 
         // 3. Tạo một đối tượng Page<ProductEntity> giả
         // (Nó cần danh sách, đối tượng Pageable, và tổng số phần tử)
@@ -142,6 +144,29 @@ public class ProductServiceMockTest {
 
     @Test
     @DisplayName("Lấy danh sách tất cả sản phẩm")
+    void testGetAllProducts_AllCategories(){
+        //ARRANGE
+        when(productRepository.findAllWithCategory())
+                .thenReturn(productList);
+        when(productMapper.toDTO(any(ProductEntity.class)))
+                .thenReturn(mockProductDTO);
+
+        //ACT
+        List<ProductDTO> resultList = productService.getAllProducts(null);
+
+        //ASSERT
+        assertNotNull(resultList);
+        assertEquals(1, resultList.size());
+
+        //VERIFY
+        verify(productRepository, times(1)).findAllWithCategory();
+        verify(productRepository, never()).findAllByCategoryId(anyInt());
+        verify(productMapper, times(1))
+                .toDTO(any(ProductEntity.class));
+    }
+
+    @Test
+    @DisplayName("Lấy danh sách tất cả sản phẩm (phân trang)")
     void testGetAllProductsPaginated_AllCategories(){
         //ARRANGE
         when(productRepository.findAllWithCategoryPaginated((any(Pageable.class))))

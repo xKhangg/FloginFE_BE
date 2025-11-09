@@ -220,7 +220,7 @@ public class ProductServiceUnitTest {
     }
 
     @Test
-    @DisplayName("Test Case 4: Lấy 1 sản phẩm thành công")
+    @DisplayName("Test Case 4: Lấy 1 sản phẩm (Xem chi tiết) thành công")
     void testGetProductByID(){
         //ARRANGE
         when(productRepository.findById(eq(productId)))
