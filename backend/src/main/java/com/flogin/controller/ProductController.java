@@ -1,7 +1,6 @@
 package com.flogin.controller;
 
 import com.flogin.dto.ProductDTO;
-import com.flogin.entity.ProductEntity;
 import com.flogin.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -59,7 +58,7 @@ public class ProductController {
             @RequestParam(required = false) Integer categoryId,
             @RequestParam(defaultValue = "0") int page
     ){
-        Page<ProductDTO> productsPage = productService.getAllProducts(categoryId, page, FIXED_PAGE_SIZE);
+        Page<ProductDTO> productsPage = productService.getAllProductsPaginated(categoryId, page, FIXED_PAGE_SIZE);
 
         return ResponseEntity.ok(productsPage);
     }
@@ -73,7 +72,7 @@ public class ProductController {
     public ResponseEntity<ProductDTO> getProduct(
             @PathVariable Integer id
     ){
-        ProductDTO productDTO = productService.getProduct(id);
+        ProductDTO productDTO = productService.getProductByID(id);
 
         return ResponseEntity.ok(productDTO);
     }
