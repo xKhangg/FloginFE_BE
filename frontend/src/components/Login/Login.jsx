@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 // Import hooks
 import { useNavigate } from 'react-router-dom';
-
-// <--- BƯỚC 1: IMPORT TỪ FILE NGOÀI ---
-import { validateLoginForm } from '../../utils/loginValidation'; // <--- Tách ra utils
-import { login } from '../../services/authService'; // <--- Tách ra service
+import { validateUsername, validatePassword } from '../../utils/loginValidation'; //
+import { login } from '../../services/authService'; //
 import styles from './Login.module.css';
 
 
@@ -23,9 +21,15 @@ function Login() {
         event.preventDefault();
         setApiError('');
 
-        // <--- BƯỚC 3: HÀM NÀY GIỜ GỌI BẢN IMPORT ---
-        // (Nó sẽ dùng các rule validation phức tạp từ file utils)
-        const validationErrors = validateLoginForm({ username, password });
+
+        const validationErrors = {};
+        const usernameError = validateUsername(username);
+        const passwordError = validatePassword(password);
+
+        if (usernameError) validationErrors.username = usernameError;
+        if (passwordError) validationErrors.password = passwordError;
+
+
         setErrors(validationErrors);
         if (Object.keys(validationErrors).length > 0) {
             return;
@@ -33,15 +37,14 @@ function Login() {
 
         setIsLoading(true);
         try {
-            // <--- BƯỚC 4: HÀM NÀY GIỜ GỌI BẢN IMPORT ---
-            // (Nó sẽ gọi hàm mock trong authService.js)
+
             const response = await login(username, password);
             console.log('Đăng nhập thành công:', response.data);
 
-            // LƯU TOKEN VÀO LOCALSTORAGE
+
             localStorage.setItem('userToken', response.data.token);
 
-            // CHUYỂN HƯỚNG TỚI TRANG SẢN PHẨM
+
             navigate('/products');
 
         } catch (error) {
