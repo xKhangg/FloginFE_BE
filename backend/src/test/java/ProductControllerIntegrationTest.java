@@ -1,10 +1,13 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flogin.controller.ProductController;
 import com.flogin.dto.ProductDTO;
 import com.flogin.service.ProductService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -12,11 +15,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcTest(ProductController.class)
 @DisplayName("Product API Integration Test")
@@ -25,8 +29,35 @@ public class ProductControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @MockitoBean
     private ProductService productService;
+
+    //Mock Data
+    private ProductDTO requestProductDTO;
+    private ProductDTO responseProductDTO;
+    private static final Integer productId = 1;
+
+    @BeforeEach
+    void setUp() {
+        requestProductDTO = new ProductDTO();
+        requestProductDTO.setName("Book1");
+        requestProductDTO.setPrice(100_000D);
+        requestProductDTO.setQuantity(10);
+        requestProductDTO.setCategoryId(1);
+        requestProductDTO.setDescription("Book1 for testing");
+
+        responseProductDTO = new ProductDTO();
+        responseProductDTO.setId(1);
+        responseProductDTO.setName("Book1");
+        responseProductDTO.setPrice(100_000D);
+        responseProductDTO.setQuantity(10);
+        responseProductDTO.setCategoryId(1);
+        responseProductDTO.setCategoryName("Trinh thám");
+        responseProductDTO.setDescription("Book1 for testing");
+    }
 
     @Test
     @DisplayName("GET /api/products - Lấy danh sách sản phẩm")
@@ -37,13 +68,116 @@ public class ProductControllerIntegrationTest {
                 new ProductDTO("Book2", 150_000D, 15, "Book2 for testing", 2)
         );
 
-        when(productService.getAllProducts(anyInt()))
+        when(productService.getAllProducts(any()))
                 .thenReturn(productDTOList);
 
+        //VERIFY
         mockMvc.perform(get("/api/products"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].name").value("Book1"));
+                .andExpect(jsonPath("$[0].id").value(productId))
+                .andExpect(jsonPath("$[0].name").value("Book1"))
+                .andExpect(jsonPath("$[0].price").value(100_000D))
+                .andExpect(jsonPath("$[0].quantity").value(10))
+                .andExpect(jsonPath("$[0].categoryId").value(1))
+                .andExpect(jsonPath("$[0].description").value("Book1 for testing"));
     }
 
+    @Test
+    @DisplayName("GET /api/products/{id} - Lấy 1 sản phẩm")
+    void testGetProductById() throws Exception{
+        //ARRANGE
+        when(productService.getProductByID(eq(productId)))
+                .thenReturn(responseProductDTO);
+
+        //ACT & VERIFY
+        mockMvc.perform(get("/api/products/" + productId))
+                // 5. Mong đợi status 200 OK
+                .andExpect(status().isOk())
+
+                // 6. Mong đợi JSON trả về khớp với DTO
+                .andExpect(jsonPath("$.id").value(productId))
+                .andExpect(jsonPath("$.name").value("Book1"))
+                .andExpect(jsonPath("$.price").value(100_000D))
+                .andExpect(jsonPath("$.quantity").value(10))
+                .andExpect(jsonPath("$.categoryId").value(1))
+                .andExpect(jsonPath("$.categoryName").value("Trinh thám"))
+                .andExpect(jsonPath("$.description").value("Book1 for testing"));
+    }
+
+    @Test
+    @DisplayName("POST /api/products - Tạo sản phẩm mới")
+    void testCreateProduct() throws Exception{
+        //ARRANGE
+        when(productService.createProduct(any(ProductDTO.class)))
+                .thenReturn(responseProductDTO);
+
+        // ----- ACT & VERIFY -----
+        mockMvc.perform(post("/api/products")
+                        .contentType(MediaType.APPLICATION_JSON) // 2. Nói rằng tôi đang gửi JSON
+                        .content(objectMapper.writeValueAsString(requestProductDTO))) // 3. Gửi body (chuyển DTO thành chuỗi JSON)
+
+                // 4. Mong đợi status 201 CREATED (không phải 200 OK)
+                .andExpect(status().isCreated())
+
+                .andExpect(jsonPath("$.id").value(productId))
+                .andExpect(jsonPath("$.name").value("Book1"))
+                .andExpect(jsonPath("$.price").value(100_000D))
+                .andExpect(jsonPath("$.quantity").value(10))
+                .andExpect(jsonPath("$.categoryId").value(1))
+                .andExpect(jsonPath("$.categoryName").value("Trinh thám"))
+                .andExpect(jsonPath("$.description").value("Book1 for testing"));
+
+        // 8. (Tùy chọn) Verify rằng service đã được gọi 1 lần
+        verify(productService, times(1)).createProduct(any(ProductDTO.class));
+    }
+
+    @Test
+    @DisplayName("PUT /api/products/{id} - Cập nhật sản phẩm")
+    void testUpdateProduct() throws Exception{
+        //ARRANGE
+        responseProductDTO = new ProductDTO();
+        responseProductDTO.setId(2);
+        responseProductDTO.setName("Book2");
+        responseProductDTO.setPrice(150_000D);
+        responseProductDTO.setQuantity(15);
+        responseProductDTO.setDescription("Book2 for testing");
+        responseProductDTO.setCategoryId(2);
+
+        when(productService.updateProduct(eq(productId), any(ProductDTO.class)))
+                .thenReturn(responseProductDTO);
+
+        // ----- ACT & VERIFY -----
+        mockMvc.perform(put("/api/products/" + productId)
+                        .contentType(MediaType.APPLICATION_JSON)   // 2. Gửi JSON
+                        .content(objectMapper.writeValueAsString(requestProductDTO))) // 3. Body là DTO request
+
+                // 4. Mong đợi status 200 OK (vì đây là Update)
+                .andExpect(status().isOk())
+
+                // 5. Kiểm tra JSON trả về (phải là responseDTO)
+                .andExpect(jsonPath("$.id").value(2))
+                .andExpect(jsonPath("$.name").value("Book2"))
+                .andExpect(jsonPath("$.price").value(150_000D))
+                .andExpect(jsonPath("$.quantity").value(15))
+                .andExpect(jsonPath("$.categoryId").value(2))
+                .andExpect(jsonPath("$.description").value("Book2 for testing"));
+
+        verify(productService, times(1)).updateProduct(eq(productId), any(ProductDTO.class));
+    }
+
+    @Test
+    @DisplayName("DELETE /api/products/{id} - Xoá 1 sản phẩm")
+    void testDeleteProduct() throws Exception{
+        //ARRANGE
+        doNothing().when(productService).deleteProduct(eq(productId));
+
+        //ACT & VERIFY
+        mockMvc.perform(delete("/api/products/" + productId))
+
+                // 4. Mong đợi status 204 NO CONTENT
+                .andExpect(status().isNoContent());
+
+        verify(productService, times(1)).deleteProduct(eq(productId));
+    }
 }
