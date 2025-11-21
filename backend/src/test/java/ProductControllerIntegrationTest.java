@@ -1,4 +1,5 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flogin.FloginApplication;
 import com.flogin.controller.ProductController;
 import com.flogin.dto.ProductDTO;
 import com.flogin.service.ProductService;
@@ -7,7 +8,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -16,13 +21,15 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ContextConfiguration(classes = FloginApplication.class)
 @WebMvcTest(ProductController.class)
+@WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
 @DisplayName("Product API Integration Test")
 public class ProductControllerIntegrationTest {
 
@@ -43,6 +50,7 @@ public class ProductControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         requestProductDTO = new ProductDTO();
+        requestProductDTO.setId(productId);
         requestProductDTO.setName("Book1");
         requestProductDTO.setPrice(100_000D);
         requestProductDTO.setQuantity(10);
@@ -50,7 +58,7 @@ public class ProductControllerIntegrationTest {
         requestProductDTO.setDescription("Book1 for testing");
 
         responseProductDTO = new ProductDTO();
-        responseProductDTO.setId(1);
+        responseProductDTO.setId(productId);
         responseProductDTO.setName("Book1");
         responseProductDTO.setPrice(100_000D);
         responseProductDTO.setQuantity(10);
@@ -61,26 +69,30 @@ public class ProductControllerIntegrationTest {
 
     @Test
     @DisplayName("GET /api/products - Lấy danh sách sản phẩm")
-    void testGetAllProducts() throws Exception{
+    void testGetAllProductsPaginated() throws Exception{
         //ARRANGE
         List<ProductDTO> productDTOList = Arrays.asList(
                 new ProductDTO("Book1", 100_000D, 10, "Book1 for testing", 1),
                 new ProductDTO("Book2", 150_000D, 15, "Book2 for testing", 2)
         );
 
-        when(productService.getAllProducts(any()))
-                .thenReturn(productDTOList);
+        Page<ProductDTO> productPage = new PageImpl<>(productDTOList);
+
+        when(productService.getAllProductsPaginated(any(), anyInt(), anyInt()))
+                .thenReturn(productPage);
 
         //VERIFY
-        mockMvc.perform(get("/api/products"))
+        mockMvc.perform(get("/api/products")
+                        .param("page", "0") // (Tùy chọn) Giả lập gửi param
+                        .param("size", "10")
+                        .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].id").value(productId))
-                .andExpect(jsonPath("$[0].name").value("Book1"))
-                .andExpect(jsonPath("$[0].price").value(100_000D))
-                .andExpect(jsonPath("$[0].quantity").value(10))
-                .andExpect(jsonPath("$[0].categoryId").value(1))
-                .andExpect(jsonPath("$[0].description").value("Book1 for testing"));
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(jsonPath("$.content[0].name").value("Book1"))
+                .andExpect(jsonPath("$.content[0].price").value(100_000D))
+                .andExpect(jsonPath("$.content[0].quantity").value(10))
+                .andExpect(jsonPath("$.content[0].categoryId").value(1))
+                .andExpect(jsonPath("$.content[0].description").value("Book1 for testing"));
     }
 
     @Test
@@ -91,7 +103,8 @@ public class ProductControllerIntegrationTest {
                 .thenReturn(responseProductDTO);
 
         //ACT & VERIFY
-        mockMvc.perform(get("/api/products/" + productId))
+        mockMvc.perform(get("/api/products/" + productId)
+                        .with(csrf()))
                 // 5. Mong đợi status 200 OK
                 .andExpect(status().isOk())
 
@@ -114,6 +127,7 @@ public class ProductControllerIntegrationTest {
 
         // ----- ACT & VERIFY -----
         mockMvc.perform(post("/api/products")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON) // 2. Nói rằng tôi đang gửi JSON
                         .content(objectMapper.writeValueAsString(requestProductDTO))) // 3. Gửi body (chuyển DTO thành chuỗi JSON)
 
@@ -149,6 +163,7 @@ public class ProductControllerIntegrationTest {
 
         // ----- ACT & VERIFY -----
         mockMvc.perform(put("/api/products/" + productId)
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)   // 2. Gửi JSON
                         .content(objectMapper.writeValueAsString(requestProductDTO))) // 3. Body là DTO request
 
@@ -173,8 +188,8 @@ public class ProductControllerIntegrationTest {
         doNothing().when(productService).deleteProduct(eq(productId));
 
         //ACT & VERIFY
-        mockMvc.perform(delete("/api/products/" + productId))
-
+        mockMvc.perform(delete("/api/products/" + productId)
+                        .with(csrf()))
                 // 4. Mong đợi status 204 NO CONTENT
                 .andExpect(status().isNoContent());
 

@@ -197,13 +197,18 @@ public class ProductServiceMockTest {
     void testUpdateProduct() {
 
         //ARRANGE
+        CategoryEntity newCategoryEntity = new CategoryEntity();
+        newCategoryEntity.setId(2);
+        newCategoryEntity.setName("Khoa học");
+
         ProductDTO newProductDTO = new ProductDTO();
         newProductDTO.setId(2);
         newProductDTO.setName("Book2");
         newProductDTO.setPrice(150_000D);
         newProductDTO.setQuantity(15);
         newProductDTO.setDescription("Book2 for testing");
-        newProductDTO.setCategoryId(2);
+        newProductDTO.setCategoryId(newCategoryEntity.getId());
+        newProductDTO.setCategoryName(newCategoryEntity.getName());
 
         /*
         1. 📦 "Hộp" Optional là gì?
@@ -216,8 +221,8 @@ public class ProductServiceMockTest {
         Hàm productRepository.findById(id) không trả về ProductEntity.
         Nó trả về Optional<ProductEntity> (một cái hộp có thể chứa ProductEntity).
          */
-        when(categoryRepository.findById(eq(categoryId)))
-                .thenReturn(Optional.of(mockCategoryEntity));
+        when(categoryRepository.findById(eq(newCategoryEntity.getId())))
+                .thenReturn(Optional.of(newCategoryEntity));
         when(productRepository.findById(eq(productId)))
                 .thenReturn(Optional.of(mockProductEntity));
 
@@ -235,10 +240,11 @@ public class ProductServiceMockTest {
         assertEquals(15, result.getQuantity());
         assertEquals("Book2 for testing", result.getDescription());
         assertEquals(2, result.getCategoryId());
+        assertEquals("Khoa học", result.getCategoryName());
 
         //VERIFY
         verify(categoryRepository, times(1))
-                .findById(eq(categoryId));
+                .findById(eq(newCategoryEntity.getId()));
         verify(productRepository, times(1))
                 .findById(eq(productId));
 

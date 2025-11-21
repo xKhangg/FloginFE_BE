@@ -54,7 +54,7 @@ public class ProductController {
 //        return ResponseEntity.ok(productDTOList);
 //    }
     //Phân trang
-    public ResponseEntity<Page<ProductDTO>> getAllProducts(
+    public ResponseEntity<Page<ProductDTO>> getAllProductsPaginated(
             @RequestParam(required = false) Integer categoryId,
             @RequestParam(defaultValue = "0") int page
     ){
