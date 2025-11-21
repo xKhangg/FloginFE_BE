@@ -15,7 +15,7 @@ public class AuthController {
     private AuthService userService;
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody String username, @RequestBody String password) {
-        boolean success = userService.checklogin(username, password);
+        boolean success = userService.Authenticate(username, password).isSuccess();
         if(success)
         {
             return ResponseEntity.ok("Login thành công");

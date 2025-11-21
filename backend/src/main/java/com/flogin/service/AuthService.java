@@ -1,5 +1,6 @@
 package com.flogin.service;
 
+import com.flogin.dto.LoginRequest;
 import com.flogin.dto.LoginResponse;
 import com.flogin.entity.UserEntity;
 import com.flogin.repository.UserRepository;
@@ -21,9 +22,19 @@ public class AuthService {
          {
           return new LoginResponse(true, "Dang nhap thanh cong");
          }
+
        else{
            return new LoginResponse(false, "Username/password khong dung");
         }
 
+    }
+    public LoginResponse authenticate(LoginRequest loginRequest) {
+        if(loginRequest.getUsername().equals("testuser") && loginRequest.getPassword().equals("Test123"))
+        {
+            return new LoginResponse(true, "Dang nhap thanh cong");
+        }
+        else{
+            return new LoginResponse(false, "Username/password khong dung");
+        }
     }
 }
