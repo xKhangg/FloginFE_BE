@@ -28,7 +28,7 @@ public class AuthService {
         }
 
     }
-    public LoginResponse authenticate(LoginRequest loginRequest) {
+    public static LoginResponse authenticate(LoginRequest loginRequest) {
         if(loginRequest.getUsername().equals("testuser") && loginRequest.getPassword().equals("Test123"))
         {
             return new LoginResponse(true, "Dang nhap thanh cong");
