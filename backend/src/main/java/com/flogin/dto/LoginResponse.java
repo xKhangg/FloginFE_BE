@@ -3,10 +3,26 @@ package com.flogin.dto;
 public class LoginResponse {
     private boolean success;
     private String message;
+    private String token;
+    private UserDTO user;
     public LoginResponse(boolean success, String message) {
         this.success = success;
         this.message = message;
     }
+    public LoginResponse(boolean success, String message, String token) {
+        this.success = success;
+        this.message = message;
+        this.token = token;
+    }
+
+    public LoginResponse(boolean success, String dangNhapThanhCong, String token123, UserDTO user) {
+        this.success = success;
+        this.message = dangNhapThanhCong;
+        this.token = token123;
+        this.user = user;
+
+    }
+
     public boolean isSuccess() {
         return success;
     }
@@ -19,5 +35,17 @@ public class LoginResponse {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+    public String getToken() {
+        return token;
+    }
+    public void setToken(String token) {
+        this.token = token;
+    }
+    public UserDTO getUser() {
+        return user;
+    }
+    public void setUser(UserDTO user) {
+        this.user = user;
     }
 }
