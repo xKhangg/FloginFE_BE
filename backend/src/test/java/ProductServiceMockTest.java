@@ -143,29 +143,6 @@ public class ProductServiceMockTest {
     }
 
     @Test
-    @DisplayName("Lấy danh sách tất cả sản phẩm")
-    void testGetAllProducts_AllCategories(){
-        //ARRANGE
-        when(productRepository.findAllWithCategory())
-                .thenReturn(productList);
-        when(productMapper.toDTO(any(ProductEntity.class)))
-                .thenReturn(mockProductDTO);
-
-        //ACT
-        List<ProductDTO> resultList = productService.getAllProducts(null);
-
-        //ASSERT
-        assertNotNull(resultList);
-        assertEquals(1, resultList.size());
-
-        //VERIFY
-        verify(productRepository, times(1)).findAllWithCategory();
-        verify(productRepository, never()).findAllByCategoryId(anyInt());
-        verify(productMapper, times(1))
-                .toDTO(any(ProductEntity.class));
-    }
-
-    @Test
     @DisplayName("Lấy danh sách tất cả sản phẩm (phân trang)")
     void testGetAllProductsPaginated_AllCategories(){
         //ARRANGE

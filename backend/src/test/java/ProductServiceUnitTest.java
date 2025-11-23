@@ -176,28 +176,6 @@ public class ProductServiceUnitTest {
                 .save(any(ProductEntity.class));
     }
 
-//    @Test
-//    @DisplayName("Test Case 3: Lấy danh sách sản phẩm của 1 Category (phân trang) thành công")
-//    void testGetAllProductsPaginated_OneCategory(){
-//        //ARRANGE
-//        when(productRepository.findAllByCategoryIdWithCategoryPaginated(eq(categoryId), any(Pageable.class)))
-//                .thenReturn(productEntityPage);
-//        when(productMapper.toDTO(any(ProductEntity.class)))
-//                .thenReturn(productDTO);
-//
-//        //ACT
-//        Page<ProductDTO> resultPage = productService.getAllProducts(categoryId, 0, 10);
-//
-//        //ASSERT
-//        assertNotNull(resultPage);
-//        assertEquals(1L, resultPage.getTotalElements());
-//        assertEquals(1, resultPage.getContent().size());
-//
-//        //VERIFY
-//        verify(productRepository, times(1)).findAllByCategoryIdWithCategoryPaginated(eq(categoryId), any(Pageable.class));
-//        verify(productRepository, never()).findAllWithCategoryPaginated(any(Pageable.class));
-//    }
-
     @Test
     @DisplayName("Test Case 3: Lấy danh sách tất cả sản phẩm (phân trang) thành công")
     void testGetAllProductsPaginated_AllCategories(){
