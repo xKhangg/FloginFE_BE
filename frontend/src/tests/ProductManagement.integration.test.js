@@ -1,3 +1,5 @@
+/* eslint-disable testing-library/no-wait-for-multiple-assertions */
+/* eslint-disable testing-library/no-node-access */
 import React from 'react';
 // Import 'within' để sửa lỗi "multiple elements"
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
@@ -106,7 +108,7 @@ describe('ProductManagement Component Integration Tests', () => {
   });
 
   /**
-   * Test kịch bản 3: (UPDATE) Cập nhật sản phẩm (ĐÃ SỬA)
+   * Test kịch bản 3: (UPDATE) Cập nhật sản phẩm
    */
   test('nên cập nhật sản phẩm thành công', async () => {
     getProductsSpy.mockResolvedValue({ data: { content: [mockProduct1] } });
@@ -118,15 +120,12 @@ describe('ProductManagement Component Integration Tests', () => {
 
     fireEvent.click(screen.getByTitle('Sửa'));
 
-    // Phải dùng 'getAllBy...' vì label 'Giá sản phẩm' xuất hiện ở cả 2 dialog
     const priceInput = screen.getAllByLabelText(/giá sản phẩm/i).find(input => input.closest('form'));
     fireEvent.change(priceInput, { target: { value: '400000' } });
 
     fireEvent.click(screen.getByRole('button', { name: 'Cập nhật' }));
 
-    // 4. Chờ API được gọi (SỬA LỖI Ở ĐÂY)
     await waitFor(() => {
-      // Sửa "400000" (string) thành 400000 (number) để khớp với parseFloat
       expect(updateProductSpy).toHaveBeenCalledWith(mockProduct1.id, expect.objectContaining({ price: 400000 }));
     });
 
@@ -156,7 +155,7 @@ describe('ProductManagement Component Integration Tests', () => {
   });
 
   /**
-   * Test kịch bản 5: Lỗi Validation (ĐÃ SỬA)
+   * Test kịch bản 5: Lỗi Validation
    */
   test('nên hiển thị lỗi validation khi submit form tạo mới rỗng', async () => {
     getProductsSpy.mockResolvedValue({ data: { content: [] } });
@@ -166,7 +165,6 @@ describe('ProductManagement Component Integration Tests', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Lưu' }));
 
-    // 3. Chờ và kiểm tra lỗi (sử dụng 'within' để sửa lỗi)
     await waitFor(() => {
       const addDialogForm = screen.getByRole('button', { name: 'Lưu' }).closest('form');
       const { getByText } = within(addDialogForm);

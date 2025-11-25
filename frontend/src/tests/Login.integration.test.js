@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Login from '../components/Login/Login'; // Cập nhật đúng đường dẫn tới Login.jsx
-import * as authService from '../services/authService'; // Cập nhật đúng đường dẫn tới authService.js
+import Login from '../components/Login/Login';
+import * as authService from '../services/authService';
 
-// --- MOCK REACT ROUTER DOM (fix lỗi Jest ESM) ---
+// --- MOCK REACT ROUTER DOM ---
 const mockNavigate = jest.fn();
 
 jest.mock('react-router-dom', () => ({
@@ -46,10 +46,14 @@ describe('Login Component Integration Tests (Login.jsx)', () => {
     const submitButton = screen.getByRole('button', { name: /đăng nhập/i });
     fireEvent.click(submitButton);
 
+    // --- SỬA LỖI TẠI ĐÂY ---
+    // Chỉ chờ cho thông báo lỗi đầu tiên xuất hiện
     await waitFor(() => {
       expect(screen.getByText('Tên đăng nhập không được để trống')).toBeInTheDocument();
-      expect(screen.getByText('Mật khẩu không được để trống')).toBeInTheDocument();
     });
+
+    // Kiểm tra thông báo lỗi thứ hai BÊN NGOÀI khối waitFor
+    expect(screen.getByText('Mật khẩu không được để trống')).toBeInTheDocument();
 
     expect(loginSpy).not.toHaveBeenCalled();
   });

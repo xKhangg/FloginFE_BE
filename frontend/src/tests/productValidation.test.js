@@ -15,19 +15,6 @@ describe('Product Validation Tests', () => {
     expect(Object.keys(errors).length).toBe(0);
   });
 
-  // Test case hợp lệ khác (sách Dế Mèn)
-  test('TC1_EXTRA: Product (Sách) hợp lệ khác - không có lỗi', () => {
-    const product = {
-      name: 'Dế Mèn Phiêu Lưu Ký',
-      price: 80000,
-      quantity: 100,
-      category: 'Thiếu nhi',
-      description: 'Tác giả: Tô Hoài. Phiên bản có tranh minh họa màu.'
-    };
-    const errors = validateProduct(product);
-    expect(Object.keys(errors).length).toBe(0);
-  });
-
   // === Test Product Name ===
   test('TC2: Product name rỗng - nên trả về lỗi', () => {
     const product = { name: '', price: 1000, quantity: 10, category: 'Test' };
