@@ -1,2 +1,140 @@
-### Lấy tất cả sản phẩm (GET)
-GET http://localhost:8080/api/products?page=0
+### Cấu hình biến môi trường (Host)
+@baseUrl = http://localhost:8080/api/products
+
+# ==========================================
+# 1. LẤY TẤT CẢ SẢN PHẨM  (GET - Page 0)
+# ==========================================
+GET {{baseUrl}}?page=0
+
+> {%
+    client.test("Lấy danh sách thành công", function() {
+        // 1. Kiểm tra status 200 OK
+        client.assert(response.status === 200, "Status code phải là 200");
+
+        // 2. Kiểm tra xem kết quả trả về có phải là dạng Page không
+        // (Page phải có trường 'content' là một mảng)
+        client.assert(Array.isArray(response.body.content), "Phản hồi phải chứa mảng 'content'");
+
+        // 3. Kiểm tra các thông tin phân trang khác (tùy chọn)
+        client.log("Tổng số trang: " + response.body.totalPages);
+        client.log("Tổng số sản phẩm: " + response.body.totalElements);
+    });
+%}
+
+###
+
+# ==========================================
+# 2. LẤY SẢN PHẨM THEO CATEGORY (GET)
+# ==========================================
+GET {{baseUrl}}?page=0&categoryId=1
+
+> {%
+    client.test("Lọc theo category thành công", function() {
+        client.assert(response.status === 200, "Status code phải là 200");
+
+        // Kiểm tra sản phẩm đầu tiên (nếu có) xem có đúng categoryId = 1 không
+        if (response.body.content.length > 0) {
+            client.assert(response.body.content[0].categoryId === 1, "Sản phẩm phải thuộc Category 1");
+        }
+    });
+%}
+
+###
+
+# ==========================================
+# 3. TẠO SẢN PHẨM MỚI (POST)
+# ==========================================
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "name": "Sản phẩm Test IntelliJ",
+  "price": 150000,
+  "quantity": 100,
+  "categoryId": 1,
+  "description": "Mô tả test tự động từ HTTP Client"
+}
+
+> {%
+    // 1. In ra status code để kiểm tra
+    client.log("Status Code nhận được: " + response.status);
+
+    // 2. Kiểm tra xem request có thành công không (201 Created)
+    if (response.status === 201) {
+        // Nếu thành công mới lấy ID
+        client.global.set("productId", response.body.id);
+        client.log("✅ Thành công! Đã lưu ID: " + response.body.id);
+    } else {
+        // Nếu thất bại, in ra lỗi để sửa
+        client.log("❌ Thất bại! Server trả về lỗi.");
+        // Nếu body không null thì in ra body lỗi
+        if (response.body) {
+            client.log("Chi tiết lỗi: " + JSON.stringify(response.body));
+        }
+    }
+%}
+
+###
+
+# ==========================================
+# 4. XEM CHI TIẾT SẢN PHẨM VỪA TẠO (GET)
+# ==========================================
+# {{productId}} sẽ tự động điền ID lấy được ở bước 1
+GET {{baseUrl}}/{{productId}}
+
+> {%
+    client.test("Request thành công", function() {
+        client.assert(response.status === 200, "Status code phải là 200");
+        client.assert(response.body.name === "Sản phẩm Test IntelliJ", "Tên sản phẩm phải khớp");
+    });
+%}
+
+###
+
+# ==========================================
+# 5. CẬP NHẬT SẢN PHẨM ĐÓ (PUT)
+# ==========================================
+PUT {{baseUrl}}/{{productId}}
+Content-Type: application/json
+
+{
+  "name": "Sản phẩm Test IntelliJ EDITED",
+  "price": 200000,
+  "quantity": 50,
+  "categoryId": 1,
+  "description": "Đã cập nhật thông tin"
+}
+
+> {%
+    client.test("Cập nhật thành công", function() {
+        client.assert(response.status === 200, "Status code phải là 200");
+        client.assert(response.body.name === "Sản phẩm Test IntelliJ EDITED", "Tên phải được cập nhật");
+    });
+%}
+
+###
+
+# ==========================================
+# 6. XÓA SẢN PHẨM ĐÓ (DELETE)
+# ==========================================
+DELETE {{baseUrl}}/{{productId}}
+
+> {%
+    client.test("Xóa thành công", function() {
+        client.assert(response.status === 204, "Status code phải là 204 No Content");
+    });
+%}
+
+###
+
+# ==========================================
+# 7. KIỂM TRA LẠI (GET) - Mong đợi lỗi 404
+# ==========================================
+GET {{baseUrl}}/{{productId}}
+
+> {%
+    client.test("Sản phẩm đã biến mất", function() {
+        // Tùy vào cách bạn xử lý lỗi, có thể là 404 hoặc 500
+        client.assert(response.status === 404 || response.status === 500, "Không tìm thấy sản phẩm");
+    });
+%}

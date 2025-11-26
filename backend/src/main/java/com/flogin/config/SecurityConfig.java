@@ -35,9 +35,9 @@ public class SecurityConfig {
                 // ----------------------------------------------------------------
                 // 2. HTTPS Enforcement (Bắt buộc dùng HTTPS)
                 // ----------------------------------------------------------------
-                .requiresChannel(channel ->
-                        channel.anyRequest().requiresSecure() // Bắt buộc mọi request phải qua HTTPS
-                )
+//                .requiresChannel(channel ->
+//                        channel.anyRequest().requiresSecure() // Bắt buộc mọi request phải qua HTTPS
+//                )
 
                 // ----------------------------------------------------------------
                 // 3. Security Headers (Các header bảo mật)
@@ -64,7 +64,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/products/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 );
 
         return http.build();

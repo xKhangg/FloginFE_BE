@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "http://localhost:3000") //Dùng @CrossOrigin thay vì WebConfig cho nhanh vì chỉ có 2 Controller
+//@CrossOrigin(origins = "http://localhost:3000") //Dùng @CrossOrigin thay vì WebConfig cho nhanh vì chỉ có 2 Controller
 public class ProductController {
 
     private final ProductService productService;

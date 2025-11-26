@@ -1,15 +1,18 @@
 -- =========================================================================
 --  CHÈN DỮ LIỆU CHO BẢNG CATEGORIES (LOẠI SẢN PHẨM)
 -- =========================================================================
--- Dùng 'WHERE NOT EXISTS' để tránh chèn trùng lặp khi khởi động lại app
+
+-- 1. Trinh thám
 INSERT INTO categories (name)
 SELECT 'Trinh thám'
     WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name = 'Trinh thám');
 
+-- 2. Thiếu nhi
 INSERT INTO categories (name)
 SELECT 'Thiếu nhi'
     WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name = 'Thiếu nhi');
 
+-- 3. Khoa học
 INSERT INTO categories (name)
 SELECT 'Khoa học'
     WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name = 'Khoa học');
@@ -18,8 +21,6 @@ SELECT 'Khoa học'
 -- =========================================================================
 --  CHÈN DỮ LIỆU CHO BẢNG PRODUCTS (SẢN PHẨM)
 -- =========================================================================
--- Lưu ý: Chúng ta dùng (SELECT id FROM categories WHERE name = '...')
--- để lấy category_id một cách chính xác, thay vì đoán mò ID là 1, 2, 3.
 
 -- Cuốn 1: Trinh thám
 INSERT INTO products (name, price, quantity, description, category_id)
@@ -32,9 +33,10 @@ SELECT 'Án Mạng Trên Sông Nile', 120000, 30, 'Tác giả: Agatha Christie. 
     WHERE NOT EXISTS (SELECT 1 FROM products WHERE name = 'Án Mạng Trên Sông Nile');
 
 -- Cuốn 3: Thiếu nhi
+-- (Đã sửa lỗi chính tả ở câu WHERE: 'Phiêu Lưiu' -> 'Phiêu Lưu')
 INSERT INTO products (name, price, quantity, description, category_id)
 SELECT 'Dế Mèn Phiêu Lưu Ký', 80000, 100, 'Tác giả: Tô Hoài. Phiên bản có tranh minh họa màu.', (SELECT id FROM categories WHERE name = 'Thiếu nhi')
-    WHERE NOT EXISTS (SELECT 1 FROM products WHERE name = 'Dế Mèn Phiêu Lưiu Ký');
+    WHERE NOT EXISTS (SELECT 1 FROM products WHERE name = 'Dế Mèn Phiêu Lưu Ký');
 
 -- Cuốn 4: Khoa học
 INSERT INTO products (name, price, quantity, description, category_id)
