@@ -1,2 +1,2 @@
 ### Lấy tất cả sản phẩm (GET)
-GET http://localhost:8080/api/products?page=0&size=5
+GET http://localhost:8080/api/products?page=0
