@@ -4,12 +4,11 @@ import com.flogin.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Login Service Unit Tests")
-public class AuthServiceTest {
+public class AuthServiceUnitTest {
     private AuthService authService;
     @BeforeEach
     void setUp() {

@@ -54,5 +54,54 @@ public class AuthControllerIntegrationTest {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.token").exists());
     }
+    @Test
+    @DisplayName("POST /api/auth/login - That bai")
+    public void testLoginFailure() throws Exception{
+        LoginRequest request = new LoginRequest("Wronguser","Test123");
+        LoginResponse MockResponse = new LoginResponse(false,"Dang nhap that bai");
+
+        when(authService.authenticate(any(LoginRequest.class))).thenReturn(MockResponse);
+        mockMvc.perform(post ("/api/auth/login")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Dang nhap that bai"))
+                .andExpect(jsonPath("$.token").doesNotExist());
+    }
+    @Test
+    @DisplayName("POST /api/auth/login - That bai vì nguoi dung khong ton tai")
+    public void testLoginFailureWithInvalidUser() throws Exception{
+        LoginRequest request = new LoginRequest("InvalidUser","Test123");
+        LoginResponse MockResponse = new LoginResponse(false,"Người dùng không tồn tại");
+
+        when(authService.authenticate(any(LoginRequest.class))).thenReturn(MockResponse);
+        mockMvc.perform(post ("/api/auth/login")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Người dùng không tồn tại"))
+                .andExpect(jsonPath("$.token").doesNotExist());
+    }
+    @Test
+    @DisplayName("POST /api/auth/login - That bai vi sai mat khau")
+    public void testLoginFailureWithInvalidPassword() throws Exception{
+        LoginRequest request = new LoginRequest("User123","Wrongpassword");
+        LoginResponse MockResponse = new LoginResponse(false,"Mật khẩu không đúng");
+
+        when(authService.authenticate(any(LoginRequest.class))).thenReturn(MockResponse);
+        mockMvc.perform(post ("/api/auth/login")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Mật khẩu không đúng"))
+                .andExpect(jsonPath("$.token").doesNotExist());
+    }
+
 
 }
