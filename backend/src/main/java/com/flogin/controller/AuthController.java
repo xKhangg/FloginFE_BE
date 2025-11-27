@@ -1,5 +1,7 @@
 package com.flogin.controller;
 
+import com.flogin.dto.LoginRequest;
+import com.flogin.dto.LoginResponse;
 import com.flogin.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,14 +16,18 @@ public class AuthController {
     @Autowired
     private AuthService userService;
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody String username, @RequestBody String password) {
-        boolean success = userService.Authenticate(username, password).isSuccess();
-        if(success)
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+        LoginResponse response = userService.authenticate(loginRequest);
+
+        if(response.isSuccess())
         {
-            return ResponseEntity.ok("Login thành công");
+            return ResponseEntity.ok(response);
+        }
+        else if(response.getMessage()==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Tên đăng nhập hoặc mật khẩu không đúng");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
 }

@@ -4,31 +4,32 @@ import com.flogin.dto.LoginRequest;
 import com.flogin.dto.LoginResponse;
 import com.flogin.entity.UserEntity;
 import com.flogin.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
 public class AuthService {
+    @Autowired
     private UserRepository userRepository;
-    public LoginResponse Authenticate(String username, String password) {
-        Optional<UserEntity> user = userRepository.findByUsername(username);
-        if(user.isEmpty())
-        {
-            return new LoginResponse(false, "Nguoi dung khong ton tai");
+    public LoginResponse authenticate(LoginRequest loginRequest) {
+        Optional<UserEntity> userOptional = userRepository.findByUsername(loginRequest.getUsername());
+
+        if (userOptional.isEmpty()) {
+            return new LoginResponse(false, "Người dùng không tồn tại");
         }
 
-         else if(user.get().getPassword().equals(password))
-         {
-          return new LoginResponse(true, "Dang nhap thanh cong");
-         }
+        UserEntity user = userOptional.get();
 
-       else{
-           return new LoginResponse(false, "Username/password khong dung");
+        if (!user.getPassword().equals(loginRequest.getPassword())) {
+            return new LoginResponse(false, "Username/password không đúng");
         }
 
+        return new LoginResponse(true, "Đăng nhập thành công");
     }
-    public static LoginResponse authenticate(LoginRequest loginRequest) {
+
+    public LoginResponse authenticatetest(LoginRequest loginRequest) {
         if(loginRequest.getUsername().equals("testuser") && loginRequest.getPassword().equals("Test123"))
         {
             return new LoginResponse(true, "Dang nhap thanh cong");

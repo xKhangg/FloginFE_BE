@@ -144,7 +144,15 @@ apiClient.interceptors.request.use(
     }
 );
 
-export const getProducts = () => apiClient.get('/products');
-export const addProduct = (productData) => apiClient.post('/products', productData);
-export const updateProduct = (id, productData) => apiClient.put(`/products/${id}`, productData);
-export const deleteProduct = (id) => apiClient.delete(`/products/${id}`);
+// export const getProducts = () => apiClient.get('/api/products');
+export const getProducts = (page = 0, categoryId = null) => {
+    // Tạo query params
+    let url = `/products?page=${page}`;
+    if (categoryId) {
+        url += `&categoryId=${categoryId}`;
+    }
+    return apiClient.get(url);
+};
+export const addProduct = (productData) => apiClient.post('/api/products', productData);
+export const updateProduct = (id, productData) => apiClient.put(`/api/products/${id}`, productData);
+export const deleteProduct = (id) => apiClient.delete(`/api/products/${id}`);
