@@ -225,7 +225,7 @@ function ProductManagement() {
                             value={formData.categoryName}
                             onChange={handleFormChange}
                         >
-                            <option value="">-- Chọn loại sản phẩm --</option>
+
                             {/* Duyệt qua danh sách categories đã tải từ API */}
                             {categories.map((cat) => (
                                 <option key={cat.id} value={cat.name}>
