@@ -1,5 +1,5 @@
-import productPage from '../pages/ProductPage'; // Đảm bảo đường dẫn import đúng
-import LoginPage from '../pages/LoginPage';
+import productPage from '../pages/ProductPage.js'; // Đảm bảo đường dẫn import đúng
+import LoginPage from '../pages/LoginPage.js';
 
 describe('Product Management E2E Tests using POM', () => {
 
@@ -22,7 +22,13 @@ describe('Product Management E2E Tests using POM', () => {
 
     // Chạy trước mỗi bài test (it block)
     beforeEach(() => {
+        LoginPage.open();
         LoginPage.login('testuser', 'Test123');
+
+        // 2. Kiểm tra xem đã login thành công chưa TRƯỚC KHI đi tiếp
+        // (Tránh trường hợp login chậm chưa xong mà đã visit trang khác)
+        cy.url().should('not.include', '/login');
+
         productPage.visit();
     });
 
