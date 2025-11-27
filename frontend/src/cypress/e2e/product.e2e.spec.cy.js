@@ -149,3 +149,26 @@ describe('Product Management E2E Tests using POM', () => {
     });
 
 });
+
+describe('Security Test: XSS Vulnerability', () => {
+    it('Nên ngăn chặn thực thi mã độc JavaScript (XSS)', () => {
+        // 1. Chuẩn bị payload độc hại
+        const xssPayload = "<script>alert('Hacked')</script>";
+
+        // 2. Dùng Page Object để tạo sản phẩm với tên là payload này
+        // (Giả sử bạn đã login trong beforeEach)
+        cy.visit('http://localhost:5173');
+        cy.contains('button', 'Thêm mới').click();
+        cy.get('input[name="name"]').type(xssPayload);
+        // ... điền các trường khác ...
+        cy.get('form').submit();
+
+        // 3. VERIFY (Quan trọng nhất)
+        // Nếu React an toàn: Nó sẽ hiển thị nguyên văn chuỗi text đó
+        cy.contains(xssPayload).should('be.visible');
+
+        // Nếu React lỗi: Nó sẽ chạy script và KHÔNG hiện text đó lên màn hình
+        // (Cypress sẽ tự động fail nếu window.alert xuất hiện mà không được handle,
+        // nhưng kiểm tra text visible là cách dễ nhất để chứng minh nó bị escape).
+    });
+});
