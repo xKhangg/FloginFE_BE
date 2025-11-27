@@ -62,9 +62,9 @@ public class SecurityConfig {
 
                 // Cấu hình quyền truy cập (Như cũ)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/products/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/api/products**").permitAll()
+                        .requestMatchers("/api/auth**").permitAll()
+                        .anyRequest().authenticated()
                 );
 
         return http.build();
