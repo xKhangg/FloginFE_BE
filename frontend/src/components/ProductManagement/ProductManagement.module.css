@@ -416,3 +416,82 @@
   font-weight: 600;
   /* (Không cần code gì thêm, Grid sẽ tự xử lý) */
 }
+/* ... (Giữ nguyên các style cũ của Table, Toolbar, Dialog...) */
+
+/* --- BỔ SUNG CHO FILTER CONTROLS --- */
+.filterControls {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Khoảng cách giữa ô tìm kiếm và dropdown */
+    flex: 1;   /* Để nó chiếm khoảng trống còn lại */
+}
+
+.categoryFilter {
+    min-width: 180px; /* Đảm bảo dropdown không quá nhỏ */
+}
+
+.categorySelect {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 1px solid #d1d5db; /* Màu viền xám nhẹ */
+    border-radius: 6px;
+    background-color: white;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+.categorySelect:focus {
+    border-color: #2563eb; /* Màu xanh khi click vào */
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* --- BỔ SUNG CHO PHÂN TRANG (PAGINATION) --- */
+.pagination {
+    display: flex;
+    justify-content: center; /* Canh giữa các nút */
+    align-items: center;
+    margin-top: 20px; /* Cách bảng một chút */
+    padding: 10px;
+    gap: 15px; /* Khoảng cách giữa nút và text */
+}
+
+.pageButton {
+    padding: 8px 16px;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pageButton:hover:not(:disabled) {
+    background-color: #f3f4f6;
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+.pageButton:active:not(:disabled) {
+    background-color: #e5e7eb;
+    transform: translateY(1px);
+}
+
+.pageButton:disabled {
+    background-color: #f9fafb;
+    color: #9ca3af;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.pageInfo {
+    font-size: 14px;
+    font-weight: 600;
+    color: #4b5563;
+    min-width: 100px;
+    text-align: center;
+}
