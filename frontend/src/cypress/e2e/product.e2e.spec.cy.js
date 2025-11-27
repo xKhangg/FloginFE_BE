@@ -22,12 +22,12 @@ describe('Product Management E2E Tests using POM', () => {
 
     // Chạy trước mỗi bài test (it block)
     beforeEach(() => {
-        LoginPage.open();
-        LoginPage.login('testuser', 'Test123');
-
-        // 2. Kiểm tra xem đã login thành công chưa TRƯỚC KHI đi tiếp
-        // (Tránh trường hợp login chậm chưa xong mà đã visit trang khác)
-        cy.url().should('not.include', '/login');
+        cy.session('user-session', () => {
+            LoginPage.open();
+            LoginPage.login('testuser', 'Test123'); // Nhớ sửa pass
+            // Đợi login thành công (quan trọng)
+            cy.url().should('not.include', '/login');
+        });
 
         productPage.visit();
     });

@@ -16,11 +16,11 @@ class ProductPage {
 
         // Dialog (Form Thêm/Sửa)
         // Giả định renderFormFields tạo ra input có name chuẩn
-        nameInput: () => cy.get('input[name="name"]'),
-        priceInput: () => cy.get('input[name="price"]'),
-        quantityInput: () => cy.get('input[name="quantity"]'),
-        categoryInput: () => cy.get('select[name="categoryId"]'), // Select trong Form
-        descriptionInput: () => cy.get('textarea[name="description"]'),
+        nameInput: () => cy.get('input[name="name"]').filter(':visible'),
+        priceInput: () => cy.get('input[name="price"]').filter(':visible'),
+        quantityInput: () => cy.get('input[name="quantity"]').filter(':visible'),
+        categoryInput: () => cy.get('select[name="categoryId"]').filter(':visible'), // Select trong Form
+        descriptionInput: () => cy.get('textarea[name="description"]').filter(':visible'),
 
         // Nút trong Dialog
         saveBtn: () => cy.contains('button', 'Lưu'),
