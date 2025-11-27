@@ -78,7 +78,7 @@ public class ProductControllerIntegrationTest {
 
         Page<ProductDTO> productPage = new PageImpl<>(productDTOList);
 
-        when(productService.getAllProductsPaginated(any(), anyInt(), anyInt()))
+        when(productService.getAllProductsPaginated(anyString(), anyInt(), anyInt(), anyInt()))
                 .thenReturn(productPage);
 
         //VERIFY

@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -17,30 +18,20 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
 
     Hậu quả: Nếu bạn có 100 sản phẩm, code này sẽ chạy 101 câu query (1 câu để lấy 100 sản phẩm, và 100 câu query con để lấy Category cho từng sản phẩm).
 
-    Sửa lại: Bạn phải dùng JOIN FETCH trong Repository như chúng ta đã từng thảo luận.
-    */
-    // Sửa 1: Thêm hàm này
-    @Query("SELECT p FROM ProductEntity p JOIN FETCH p.category")
-    List<ProductEntity> findAllWithCategory();
-
-    // Sửa 2: Thêm hàm này
-    @Query("SELECT p FROM ProductEntity p JOIN FETCH p.category c WHERE c.id = :categoryId")
-    List<ProductEntity> findAllByCategoryId(Integer categoryId);
-
-    // --- HÀM MỚI CHO PHÂN TRANG ---
-
     /**
-     * Lấy tất cả sản phẩm (kèm category) CÓ PHÂN TRANG.
-     * Cần countQuery riêng vì JOIN FETCH làm sai logic COUNT mặc định.
+     * Tìm kiếm sản phẩm đa năng:
+     * 1. JOIN FETCH: Để lấy luôn Category (tránh lỗi N+1).
+     * 2. WHERE: Kiểm tra điều kiện linh hoạt.
+     * - Nếu categoryId là NULL -> Bỏ qua điều kiện này (Lấy tất cả loại).
+     * - Nếu keyword là NULL -> Bỏ qua điều kiện này (Lấy tất cả tên).
      */
-    @Query(value = "SELECT p FROM ProductEntity p JOIN FETCH p.category",
-            countQuery = "SELECT COUNT(p) FROM ProductEntity p")
-    Page<ProductEntity> findAllWithCategoryPaginated(Pageable pageable);
-
-    /**
-     * Lấy sản phẩm theo categoryId (kèm category) CÓ PHÂN TRANG.
-     */
-    @Query(value = "SELECT p FROM ProductEntity p JOIN FETCH p.category c WHERE c.id = :categoryId",
-            countQuery = "SELECT COUNT(p) FROM ProductEntity p WHERE p.category.id = :categoryId")
-    Page<ProductEntity> findAllByCategoryIdWithCategoryPaginated(Integer categoryId, Pageable pageable);
+    @Query(value = "SELECT p FROM ProductEntity p JOIN FETCH p.category c " +
+            "WHERE (:categoryId IS NULL OR c.id = :categoryId) " +
+            "AND (:keyword IS NULL OR p.name LIKE %:keyword%)",
+            countQuery = "SELECT COUNT(p) FROM ProductEntity p " +
+                    "WHERE (:categoryId IS NULL OR p.category.id = :categoryId) " +
+                    "AND (:keyword IS NULL OR p.name LIKE %:keyword%)")
+    Page<ProductEntity> searchProducts(@Param("keyword") String keyword,
+                                       @Param("categoryId") Integer categoryId,
+                                       Pageable pageable);
 }

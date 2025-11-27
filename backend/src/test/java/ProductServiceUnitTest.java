@@ -180,13 +180,14 @@ public class ProductServiceUnitTest {
     @DisplayName("Test Case 3: Lấy danh sách tất cả sản phẩm (phân trang) thành công")
     void testGetAllProductsPaginated_AllCategories(){
         //ARRANGE
-        when(productRepository.findAllWithCategoryPaginated((any(Pageable.class))))
+        when(productRepository.searchProducts(anyString(), anyInt(), any(Pageable.class)))
                 .thenReturn(productEntityPage);
         when(productMapper.toDTO(any(ProductEntity.class)))
                 .thenReturn(productDTO);
 
         //ACT
         Page<ProductDTO> resultPage = productService.getAllProductsPaginated(
+                null,
                 null,
                 pageable.getPageNumber(),
                 pageable.getPageSize());
@@ -197,8 +198,7 @@ public class ProductServiceUnitTest {
         assertEquals(1, resultPage.getContent().size());
 
         //VERIFY
-        verify(productRepository, times(1)).findAllWithCategoryPaginated(any(Pageable.class));
-        verify(productRepository, never()).findAllByCategoryIdWithCategoryPaginated(anyInt(), any(Pageable.class));
+        verify(productRepository, times(1)).searchProducts(anyString(), anyInt(), any(Pageable.class));
         verify(productMapper, times(1))
                 .toDTO(any(ProductEntity.class));
     }

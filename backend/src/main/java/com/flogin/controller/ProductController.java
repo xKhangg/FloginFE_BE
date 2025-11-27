@@ -46,19 +46,13 @@ public class ProductController {
     }
 
     @GetMapping
-//    public ResponseEntity<List<ProductDTO>> getAllProducts(
-//            @RequestParam(required = false) Integer categoryId
-//    ){
-//        List<ProductDTO> productDTOList = productService.getAllProducts(categoryId);
-//
-//        return ResponseEntity.ok(productDTOList);
-//    }
     //Phân trang
     public ResponseEntity<Page<ProductDTO>> getAllProductsPaginated(
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) Integer categoryId,
             @RequestParam(defaultValue = "0") int page
     ){
-        Page<ProductDTO> productsPage = productService.getAllProductsPaginated(categoryId, page, FIXED_PAGE_SIZE);
+        Page<ProductDTO> productsPage = productService.getAllProductsPaginated(name, categoryId, page, FIXED_PAGE_SIZE);
 
         return ResponseEntity.ok(productsPage);
     }

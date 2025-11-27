@@ -60,21 +60,8 @@ public class ProductService {
     @Transactional	Quản lý Session. Giữ Session mở trong suốt hàm Service để tránh lỗi LazyInitializationException
     (ngay cả khi bạn đã dùng JOIN FETCH, đây vẫn là một "lưới an toàn" tốt).
      */
-    @Transactional(readOnly = true)
-    public List<ProductDTO> getAllProducts(Integer categoryId){
-        List<ProductEntity> productEntityList;
-        if(categoryId == null){
-            productEntityList = productRepository.findAllWithCategory();
-        }
-        else{
-            productEntityList = productRepository.findAllByCategoryId(categoryId);
-        }
-
-        return productEntityList.stream().map(productMapper::toDTO).toList();
-    }
-
     //Phân trang
-    public Page<ProductDTO> getAllProductsPaginated(Integer categoryId, int page, int pageSize){
+    public Page<ProductDTO> getAllProductsPaginated(String name, Integer categoryId, int page, int pageSize){
 
         // 1. Tạo đối tượng Pageable (chỉ định trang nào, bao nhiêu phần tử)
         Pageable pageable = PageRequest.of(page, pageSize);
@@ -82,12 +69,7 @@ public class ProductService {
         Page<ProductEntity> productEntityPage;
 
         //2. Gọi hàm Repository tương ứng
-        if(categoryId == null){
-            productEntityPage = productRepository.findAllWithCategoryPaginated(pageable);
-        }
-        else{
-            productEntityPage = productRepository.findAllByCategoryIdWithCategoryPaginated(categoryId, pageable);
-        }
+        productEntityPage = productRepository.searchProducts(name, categoryId, pageable);
 
         // 3. Dùng hàm .map() có sẵn của Page để chuyển đổi Page<Entity> -> Page<DTO>
         // Nó sẽ tự động gọi productMapper.toDTO cho từng sản phẩm trong trang
