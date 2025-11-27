@@ -1,5 +1,5 @@
 import productPage from '../pages/ProductPage'; // Đảm bảo đường dẫn import đúng
-import LoginPage from '../pages/LoginPage';
+import LoginPage from '../../../cypress/pages/LoginPage';
 
 describe('Product Management E2E Tests using POM', () => {
 
