@@ -25,7 +25,7 @@ public class UserEntity {
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$", message = "Mật khẩu phải có chữ và số")
     @Column(nullable=false)
     private String password;
-    private boolean enabled;
+
 
     public UserEntity(String username, String password)  {
         this.username = username;

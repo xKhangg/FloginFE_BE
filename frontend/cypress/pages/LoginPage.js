@@ -11,7 +11,7 @@ class LoginPage {
     }
     get errorMessage() { return cy.get('.alert-danger'); }
     open(){
-        cy.visit('/api/auth/login');
+        cy.visit('/auth/login');
     }
     login(username, password) {
         this.usernameInput.value = username;

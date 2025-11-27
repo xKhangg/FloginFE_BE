@@ -12,7 +12,7 @@ describe('Login E2E Tests', ()=>{
     cy.get('[data-testid="username-input"]').type('testuser');
     cy.get('[data-testid="password-input"]').type('Test123');
     cy.get('[data-testid="login-button"]').click();
-    cy.url().should('include', '/dashboard');
+    cy.url().should('include', '/products');
 
   });
 

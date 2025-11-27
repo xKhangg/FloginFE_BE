@@ -102,6 +102,6 @@ INSERT INTO products (name, price, quantity, description, category_id)
 SELECT 'Bản Thiết Kế Vĩ Đại', 160000, 25, 'Tác giả: Stephen Hawking. Những câu hỏi lớn về vũ trụ.', (SELECT id FROM categories WHERE name = 'Khoa học')
     WHERE NOT EXISTS (SELECT 1 FROM products WHERE name = 'Bản Thiết Kế Vĩ Đại');
 
-INSERT INTO users (username, password, enabled)
-SELECT 'testuser', 'Test123', true
+INSERT INTO users (username, password)
+SELECT 'testuser', 'Test123'
     WHERE NOT EXISTS (SELECT 1 FROM `users` WHERE username = 'testuser');
