@@ -1,4 +1,5 @@
-import productPage from './ProductPage'; // Đảm bảo đường dẫn import đúng
+import productPage from '../pages/ProductPage'; // Đảm bảo đường dẫn import đúng
+import LoginPage from '../pages/LoginPage';
 
 describe('Product Management E2E Tests using POM', () => {
 
@@ -21,6 +22,7 @@ describe('Product Management E2E Tests using POM', () => {
 
     // Chạy trước mỗi bài test (it block)
     beforeEach(() => {
+        LoginPage.login('testuser', 'Test123');
         productPage.visit();
     });
 
