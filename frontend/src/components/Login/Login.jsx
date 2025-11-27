@@ -77,6 +77,7 @@ function Login() {
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             className={`${styles.input} ${errors.username ? styles.inputError : ''}`}
+                            data-testid="username-input"
                         />
                         {errors.username && <span className={styles.helperText}>{errors.username}</span>}
                     </div>
@@ -94,6 +95,7 @@ function Login() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
+                            data-testid="password-input"
                         />
                         {errors.password && <span className={styles.helperText}>{errors.password}</span>}
                     </div>
@@ -103,6 +105,7 @@ function Login() {
                         type="submit"
                         className={styles.button}
                         disabled={isLoading}
+                        data-testid="login-button"
                     >
                         {isLoading ? <div className={styles.loader}></div> : 'Đăng nhập'}
                     </button>

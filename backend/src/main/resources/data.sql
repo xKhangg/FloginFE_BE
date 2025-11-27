@@ -101,3 +101,6 @@ SELECT 'Gen: Lịch Sử Và Tương Lai Của Nhân Loại', 280000, 15, 'Tác 
 INSERT INTO products (name, price, quantity, description, category_id)
 SELECT 'Bản Thiết Kế Vĩ Đại', 160000, 25, 'Tác giả: Stephen Hawking. Những câu hỏi lớn về vũ trụ.', (SELECT id FROM categories WHERE name = 'Khoa học')
     WHERE NOT EXISTS (SELECT 1 FROM products WHERE name = 'Bản Thiết Kế Vĩ Đại');
+
+INSERT INTO USER(username,password)
+VALUES ("testuser","Test123");
