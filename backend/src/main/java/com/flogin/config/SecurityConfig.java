@@ -63,6 +63,7 @@ public class SecurityConfig {
                 // Cấu hình quyền truy cập (Như cũ)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/products**", "/api/products/**").permitAll()
+                        .requestMatchers("/api/categories/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
@@ -86,6 +87,7 @@ public class SecurityConfig {
 
         // Cho phép gửi credentials (cookie, auth headers)
         configuration.setAllowCredentials(true);
+
 
         // Cache pre-flight request trong 1 giờ (3600s) để giảm tải cho server
         configuration.setMaxAge(3600L);

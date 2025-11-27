@@ -27,5 +27,5 @@ apiClient.interceptors.request.use(
 
 // 3. Gọi API lấy danh sách
 export const getAllCategories = () => {
-    return apiClient.get('/api/categories');
+    return apiClient.get('/categories');
 };
