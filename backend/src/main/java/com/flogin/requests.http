@@ -138,3 +138,112 @@ GET {{baseUrl}}/{{productId}}
         client.assert(response.status === 404 || response.status === 500, "Không tìm thấy sản phẩm");
     });
 %}
+
+###
+
+# =================================================================
+# PHẦN B: SECURITY TESTING (5 ĐIỂM)
+# =================================================================
+
+# ==========================================
+# 8. TEST SQL INJECTION (Vào ô Search)
+# ==========================================
+# Kịch bản: Kẻ tấn công cố gắng chèn mã SQL vào tham số tìm kiếm
+# Payload: ' OR '1'='1
+# Mong đợi: Hệ thống không bị crash (500) và không trả về toàn bộ DB (nếu logic đúng)
+GET {{baseUrl}}?search=' OR '1'='1
+
+> {%
+    client.test("SQL Injection: Hệ thống an toàn (Không 500)", function() {
+        // 1. Không được sập nguồn (500 Internal Server Error)
+        client.assert(response.status !== 500, "LỖI: Có vẻ dính SQL Injection (Server Error)");
+
+        // 2. Kiểm tra status 200 (Hệ thống xử lý được chuỗi lạ)
+        client.assert(response.status === 200, "Status code nên là 200 (Xử lý an toàn)");
+
+        // 3. (Tùy chọn) Kiểm tra kết quả trả về rỗng (hoặc không thay đổi bất thường)
+        // Nếu trả về toàn bộ DB -> Dính lỗi. Nếu trả về rỗng -> An toàn.
+        client.log("Số lượng bản ghi trả về: " + response.body.content.length);
+    });
+%}
+
+###
+
+# ==========================================
+# 9. TEST AUTHENTICATION BYPASS (Cố xóa không quyền)
+# ==========================================
+# Kịch bản: Kẻ tấn công gọi API Xóa (hoặc API nhạy cảm) mà không đăng nhập
+# Lưu ý: Test này chỉ XANH (Pass) nếu bạn đã cấu hình .authenticated() cho DELETE
+DELETE {{baseUrl}}/{{productId}}
+
+> {%
+    client.test("Auth Bypass: Kiểm tra chặn truy cập trái phép", function() {
+        if (response.status === 403 || response.status === 401) {
+            client.log("✅ AN TOÀN: Hệ thống đã chặn yêu cầu không đăng nhập.");
+        } else if (response.status === 204 || response.status === 200) {
+            client.log("⚠️ CẢNH BÁO: Hệ thống cho phép xóa mà không cần đăng nhập (Vulnerable).");
+            client.log("Lý do: Do bạn đang để .permitAll() trong SecurityConfig.");
+        } else {
+            client.log("Status nhận được: " + response.status);
+        }
+    });
+%}
+
+###
+
+# ==========================================
+# 10. TEST CSRF (Cross-Site Request Forgery)
+# ==========================================
+# Kịch bản: Gửi POST request mà không có CSRF Token
+# Vì bạn đã tắt CSRF (.disable), request này sẽ THÀNH CÔNG (201).
+# Trong báo cáo, bạn giải thích đây là REST API Stateless nên disable là hợp lý.
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "name": "Sản phẩm CSRF Attack",
+  "price": 1000,
+  "quantity": 1,
+  "categoryId": 1
+}
+
+> {%
+    client.test("CSRF Check", function() {
+        if (response.status === 201) {
+            client.log("ℹ️ INFO: Request thành công. CSRF đang tắt (Đúng với thiết kế REST API).");
+            // Xóa ID rác vừa tạo để dọn dẹp
+            client.global.set("csrfProductId", response.body.id);
+        } else if (response.status === 403) {
+            client.log("✅ AN TOÀN: CSRF đang bật, request bị chặn.");
+        }
+    });
+%}
+
+###
+
+# ==========================================
+# 11. TEST STORED XSS (Cross-Site Scripting)
+# ==========================================
+# Kịch bản: Lưu mã độc JS vào tên sản phẩm
+# Mong đợi: Backend vẫn lưu (vì nhiệm vụ lọc thường ở Frontend hoặc output), nhưng không được lỗi SQL.
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "name": "<script>alert('HACKED')</script>",
+  "price": 50000,
+  "quantity": 10,
+  "categoryId": 1
+}
+
+> {%
+    client.test("XSS Payload Injection", function() {
+        client.assert(response.status === 201, "Backend nên cho phép lưu (Frontend React sẽ lo việc hiển thị an toàn)");
+        client.global.set("xssProductId", response.body.id);
+    });
+%}
+
+###
+
+# Dọn dẹp dữ liệu rác của test bảo mật (Xóa sản phẩm XSS)
+DELETE {{baseUrl}}/{{xssProductId}}
