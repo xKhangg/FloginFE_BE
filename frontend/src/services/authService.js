@@ -12,7 +12,7 @@
 //         }, delay);
 //     });
 // };
-
+//
 // // Hàm giả lập lỗi
 // const simulateError = (message, delay = 300) => {
 //      return new Promise((_, reject) => {
@@ -21,14 +21,14 @@
 //         }, delay);
 //     });
 // }
-
+//
 // /**
 //  * Giả lập API đăng nhập.
 //  * Dùng tài khoản test từ PDF (Trang 7): testuser / Test123
 //  */
 // export const login = (username, password) => {
 //     console.log("Đã gọi API giả (mock): login", { username, password });
-
+//
 //     if (username === "testuser" && password === "Test123") {
 //         const successResponse = {
 //             token: "mock-admin-token-xyz789",
@@ -37,17 +37,17 @@
 //         // Trả về thành công
 //         return simulateNetwork(successResponse);
 //     }
-
+//
 //     // Trả về lỗi
 //     return simulateError("Tên đăng nhập hoặc mật khẩu không chính xác.");
 // };
-
-
-// --- HẾT PHẦN MOCK API ---
+//
+//
+//// --- HẾT PHẦN MOCK API ---
 
 // ==================================================
-// --- PHẦN API THẬT (ĐỂ DÙNG SAU NÀY) ---
-// ==================================================
+ --- PHẦN API THẬT (ĐỂ DÙNG SAU NÀY) ---
+ ==================================================
 
 import axios from 'axios';
 const API_BASE_URL = 'http://localhost:8080/';

@@ -214,18 +214,28 @@ function ProductManagement() {
             </div>
             
             {/* Dropdown chọn loại sản phẩm khi thêm/sửa */}
-            <div className={styles.formGroup}>
-                <label className={styles.label}>Loại sản phẩm <span className={styles.requiredStar}>*</span></label>
-                 {/* Bạn có thể đổi thành <select> nếu muốn user chọn từ danh sách có sẵn */}
-                 <input
-                    name="categoryName"
-                    type="text"
-                    className={`${styles.input} ${errors.categoryName ? styles.inputError : ''}`}
-                    value={formData.categoryName}
-                    onChange={handleFormChange}
-                />
-                {errors.categoryName && <span className={styles.helperText}>{errors.categoryName}</span>}
-            </div>
+        <div className={styles.formGroup}>
+                        <label htmlFor="categoryName" className={styles.label}>Loại sản phẩm <span className={styles.requiredStar}>*</span></label>
+
+                        {/* Thay bằng thẻ SELECT để hiển thị danh sách */}
+                        <select
+                            id="categoryName"
+                            name="categoryName"
+                            className={`${styles.input} ${errors.categoryName ? styles.inputError : ''}`}
+                            value={formData.categoryName}
+                            onChange={handleFormChange}
+                        >
+                            <option value="">-- Chọn loại sản phẩm --</option>
+                            {/* Duyệt qua danh sách categories đã tải từ API */}
+                            {categories.map((cat) => (
+                                <option key={cat.id} value={cat.name}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </select>
+
+                        {errors.categoryName && <span className={styles.helperText}>{errors.categoryName}</span>}
+                    </div>
 
             <div className={styles.formGroup}>
                 <label className={styles.label}>Số lượng <span className={styles.requiredStar}>*</span></label>

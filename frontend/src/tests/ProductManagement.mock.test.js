@@ -46,7 +46,7 @@ describe('ProductManagement - Mock Tests (Final Version)', () => {
     test('Test 2: Thêm sách mới thành công', async () => {
         // Setup mock
         mockedAddProduct.mockResolvedValue({ data: { id: 3, name: 'Sách Mới' } });
-        
+
         render(<ProductManagement />);
         await screen.findByText('Sherlock Holmes'); // Chờ load xong
 
@@ -115,13 +115,13 @@ describe('ProductManagement - Mock Tests (Final Version)', () => {
 
     test('Test 5: Chức năng tìm kiếm ', async () => {
         render(<ProductManagement />);
-        
+
         // 1. Chờ dữ liệu load xong
         expect(await screen.findByText('Sherlock Holmes')).toBeInTheDocument();
         expect(screen.getByText('Dế Mèn')).toBeInTheDocument();
 
         // 2. Nhập từ khóa tìm kiếm "Sherlock"
-        const searchInput = screen.getByPlaceholderText(/Tìm kiếm theo tên/i); 
+        const searchInput = screen.getByPlaceholderText(/Tìm kiếm theo tên/i);
         fireEvent.change(searchInput, { target: { value: 'Sherlock' } });
 
         // 3. Kiểm tra kết quả lọc
@@ -130,6 +130,6 @@ describe('ProductManagement - Mock Tests (Final Version)', () => {
         // "Dế Mèn" phải biến mất
         expect(screen.queryByText('Dế Mèn')).not.toBeInTheDocument();
     });
-    
+
 
 });
