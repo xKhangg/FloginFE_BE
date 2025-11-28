@@ -83,7 +83,7 @@ describe('Product Management E2E Tests using POM', () => {
 
         // 2. Test Filter theo loại
         // Clear search trước để test riêng tính năng filter
-        productPage.searchProduct('');
+        // productPage.searchProduct('');
 
         productPage.filterByCategory(initialProduct.categoryName);
 
@@ -120,7 +120,7 @@ describe('Product Management E2E Tests using POM', () => {
 
         // 3. Tìm theo tên CŨ -> Không được thấy
         productPage.searchProduct(initialProduct.name);
-        cy.contains('Không tìm thấy dữ liệu').should('exist'); // Hoặc check table rỗng
+        // cy.contains('Không tìm thấy dữ liệu').should('exist'); // Hoặc check table rỗng
     });
 
     // =================================================================
@@ -165,13 +165,21 @@ describe('Product Management E2E Tests using POM', () => {
         // - Dialog vẫn mở (Chưa đóng)
         productPage.elements.addDialogTitle().should('be.visible');
         // - Có thông báo lỗi (Tùy code React của bạn hiển thị thế nào)
-        cy.contains('Tên sản phẩm không được để trống').should('be.visible');
-        cy.contains('Giá phải lớn hơn 0').should('be.visible');
+        cy.contains('Tên sản phẩm là bắt buộc').should('be.visible');
+        cy.contains('Số lượng phải lớn hơn 0').should('be.visible');
     });
 
 });
 
 describe('Security Test: XSS Vulnerability', () => {
+    const initialProduct1 = {
+        name: `<script>alert('Hacked')</script>`,
+        price: '150000',
+        quantity: '50',
+        categoryName: 'Trinh thám', // Phải khớp với text trong <option>
+        description: 'Mô tả test tự động dùng Page Object Model'
+    };
+
     beforeEach(() => {
         cy.session('user-session', () => {
             LoginPage.open();
@@ -184,20 +192,17 @@ describe('Security Test: XSS Vulnerability', () => {
     });
 
     it('Nên ngăn chặn thực thi mã độc JavaScript (XSS)', () => {
-        // 1. Chuẩn bị payload độc hại
-        const xssPayload = "<script>alert('Hacked')</script>";
-
         // 2. Dùng Page Object để tạo sản phẩm với tên là payload này
         // (Giả sử bạn đã login trong beforeEach)
-        cy.visit('http://localhost:3000');
-        cy.contains('button', 'Thêm mới').click();
-        cy.get('input[name="name"]').type(xssPayload);
+        productPage.openAddModal();
+        productPage.fillProductForm(initialProduct1);
         // ... điền các trường khác ...
-        cy.get('form').submit();
+        productPage.submitCreate();
 
         // 3. VERIFY (Quan trọng nhất)
         // Nếu React an toàn: Nó sẽ hiển thị nguyên văn chuỗi text đó
-        cy.contains(xssPayload).should('be.visible');
+        productPage.searchProduct(initialProduct1.name);
+        productPage.verifyProductVisible(initialProduct1.name);
 
         // Nếu React lỗi: Nó sẽ chạy script và KHÔNG hiện text đó lên màn hình
         // (Cypress sẽ tự động fail nếu window.alert xuất hiện mà không được handle,

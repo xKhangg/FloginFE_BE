@@ -25,7 +25,7 @@ public class AuthService {
 
         UserEntity user = userOptional.get();
 
-        if (!passwordEncoder.matches((loginRequest.getPassword()),user.getPassword())) {
+        if (!user.getPassword().equals(loginRequest.getPassword())) {
             return new LoginResponse(false, "Username/password không đúng");
         }
 

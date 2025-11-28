@@ -1,0 +1,52 @@
+name : Complete CI / CD Pipeline
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  test:
+  runs - on: windows - latest
+
+  services:
+    postgres:
+      image : postgres :14
+
+      env :
+        POSTGRES_DB : testdb
+        POSTGRES_PASSWORD : password
+      ports : 5432:5432
+
+  steps :
+    - uses : actions / checkout@v2
+
+    - name : Setup Java
+      uses : actions / setup - java@v2
+      with :
+        java - version : ’17 ’
+
+    - name : Setup Node . js
+      uses : actions / setup - node@v2
+      with :
+        node - version : ’18 ’
+
+33 - name : Backend Tests
+34 run : |
+  35 cd backend
+  36 ./ mvnw clean test
+  37
+38 - name : Frontend Tests
+39 run : |
+  40 cd frontend
+  41 npm install
+  42 npm test -- -- coverage
+  43
+44 - name : E2E Tests
+45 run : |
+  46 cd frontend
+47 npm run test : e2e
+  48
+49 - name : Upload Coverage
+50 uses : codecov / codecov - action@v2
+51 with :
+52 files : ./ frontend / coverage / lcov . info ,./ backend / target / site / jacoco / jacoco
+  . xml
