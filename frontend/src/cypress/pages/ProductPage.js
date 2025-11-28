@@ -19,7 +19,7 @@ class ProductPage {
         nameInput: () => cy.get('input[name="name"]').filter(':visible'),
         priceInput: () => cy.get('input[name="price"]').filter(':visible'),
         quantityInput: () => cy.get('input[name="quantity"]').filter(':visible'),
-        categoryInput: () => cy.get('select[name="categoryId"]').filter(':visible'), // Select trong Form
+        categoryInput: () => cy.get('select[name="categoryName"]').filter(':visible'), // Select trong Form
         descriptionInput: () => cy.get('textarea[name="description"]').filter(':visible'),
 
         // Nút trong Dialog

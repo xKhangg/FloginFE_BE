@@ -157,7 +157,7 @@ describe('Security Test: XSS Vulnerability', () => {
 
         // 2. Dùng Page Object để tạo sản phẩm với tên là payload này
         // (Giả sử bạn đã login trong beforeEach)
-        cy.visit('http://localhost:5173');
+        cy.visit('http://localhost:3000');
         cy.contains('button', 'Thêm mới').click();
         cy.get('input[name="name"]').type(xssPayload);
         // ... điền các trường khác ...

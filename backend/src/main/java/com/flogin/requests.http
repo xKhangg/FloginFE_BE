@@ -148,9 +148,6 @@ GET {{baseUrl}}/{{productId}}
 # ==========================================
 # 8. TEST SQL INJECTION (Vào ô Search)
 # ==========================================
-# Kịch bản: Kẻ tấn công cố gắng chèn mã SQL vào tham số tìm kiếm
-# Payload: ' OR '1'='1
-# Mong đợi: Hệ thống không bị crash (500) và không trả về toàn bộ DB (nếu logic đúng)
 GET {{baseUrl}}?name=' OR '1'='1
 
 > {%
@@ -174,7 +171,24 @@ GET {{baseUrl}}?name=' OR '1'='1
 # ==========================================
 # Kịch bản: Kẻ tấn công gọi API Xóa (hoặc API nhạy cảm) mà không đăng nhập
 # Lưu ý: Test này chỉ XANH (Pass) nếu bạn đã cấu hình .authenticated() cho DELETE
-DELETE {{baseUrl}}/{{productId}}
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "name": "Sản phẩm Test IntelliJ 1",
+  "price": 150000,
+  "quantity": 100,
+  "categoryId": 1,
+  "description": "Mô tả test tự động từ HTTP Client"
+}
+
+> {%
+    client.global.set("productId1", response.body.id);
+%}
+
+###
+
+DELETE {{baseUrl}}/{{productId1}}
 
 > {%
     client.test("Auth Bypass: Kiểm tra chặn truy cập trái phép", function() {
@@ -224,8 +238,6 @@ Content-Type: application/json
 # ==========================================
 # 11. TEST STORED XSS (Cross-Site Scripting)
 # ==========================================
-# Kịch bản: Lưu mã độc JS vào tên sản phẩm
-# Mong đợi: Backend vẫn lưu (vì nhiệm vụ lọc thường ở Frontend hoặc output), nhưng không được lỗi SQL.
 POST {{baseUrl}}
 Content-Type: application/json
 
