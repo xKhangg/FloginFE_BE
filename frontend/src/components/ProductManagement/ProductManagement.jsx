@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './ProductManagement.module.css';
 
 // --- IMPORT API ---
@@ -9,7 +9,6 @@ import {
     deleteProduct
 } from '../../services/productService';
 
-// Import thêm service Category mới (bạn nhớ tạo file này nhé)
 import { getAllCategories } from '../../services/categoryService';
 
 import {
@@ -24,22 +23,23 @@ const emptyForm = {
     name: '',
     price: '',
     quantity: '',
-    categoryId: '', // Lưu ý: Form thêm mới vẫn cần nhập tên category hoặc chọn từ dropdown (tùy logic bạn muốn)
+    categoryId: '',
     description: '',
 };
 
 function ProductManagement() {
     // --- STATE DỮ LIỆU ---
     const [products, setProducts] = useState([]);
-    const [categories, setCategories] = useState([]); // Danh sách loại lấy từ Server
+    const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     // --- STATE BỘ LỌC & PHÂN TRANG ---
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategoryId, setSelectedCategoryId] = useState('All'); // Lọc theo ID hoặc 'All'
+    const [selectedCategoryId, setSelectedCategoryId] = useState('All');
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
-    const pageSize = 5; // Số lượng item/trang (khớp với config backend nếu có)
+    
+    // Không cần khai báo pageSize cố định ở đây nữa vì ta sẽ xử lý động bên dưới
 
     // --- STATE FORM & DIALOG ---
     const [formData, setFormData] = useState(emptyForm);
@@ -57,7 +57,6 @@ function ProductManagement() {
         const fetchCategories = async () => {
             try {
                 const res = await getAllCategories();
-                // Giả sử API trả về mảng object [{id: 1, name: 'Trinh thám'}, ...]
                 setCategories(res.data || []);
             } catch (err) {
                 console.error("Lỗi tải categories", err);
@@ -66,18 +65,21 @@ function ProductManagement() {
         fetchCategories();
     }, []);
 
-    // --- 2. TẢI SẢN PHẨM (Server-side Pagination & Filtering) ---
-    const fetchProducts = async (page, catId) => {
+    // --- 2. TẢI SẢN PHẨM (ĐÃ SỬA LOGIC TÌM KIẾM SERVER-SIDE) ---
+    const fetchProducts = async (page, catId, search) => {
         setIsLoading(true);
         setApiError(null);
         try {
-            // Xử lý tham số lọc category (nếu 'All' thì gửi null hoặc không gửi)
             const idToSend = (catId === 'All' || catId === '') ? null : catId;
 
-            // Gọi API: getProducts(page, categoryId)
-            const response = await getProducts(page, idToSend);
+            // --- LOGIC QUAN TRỌNG: ---
+            // Nếu có từ khóa tìm kiếm (search) -> Lấy size = 1000 để hiển thị TOÀN BỘ kết quả tìm được
+            // Nếu KHÔNG tìm kiếm -> Lấy size = 5 để phân trang bình thường
+            const sizeToSend = search ? 1000 : 5;
 
-            // Cập nhật state từ response của Spring Page<ProductDTO>
+            // Gọi API với đủ 4 tham số: page, category, search, size
+            const response = await getProducts(page, idToSend, search, sizeToSend);
+
             setProducts(response.data.content || []);
             setTotalPages(response.data.totalPages || 0);
 
@@ -88,16 +90,22 @@ function ProductManagement() {
         setIsLoading(false);
     };
 
-    // --- 3. GỌI API KHI THAY ĐỔI TRANG HOẶC BỘ LỌC ---
+    // --- 3. GỌI API KHI THAY ĐỔI TRANG, BỘ LỌC HOẶC TỪ KHÓA ---
     useEffect(() => {
-        // Gọi fetchProducts mỗi khi currentPage hoặc selectedCategoryId thay đổi
-        fetchProducts(currentPage, selectedCategoryId);
-    }, [currentPage, selectedCategoryId]);
+        // Mỗi khi currentPage, selectedCategoryId HOẶC searchTerm thay đổi -> Gọi lại API
+        fetchProducts(currentPage, selectedCategoryId, searchTerm);
+    }, [currentPage, selectedCategoryId, searchTerm]); // <--- Đã thêm searchTerm vào đây
 
     // --- XỬ LÝ THAY ĐỔI BỘ LỌC ---
     const handleCategoryFilterChange = (e) => {
         setSelectedCategoryId(e.target.value);
-        setCurrentPage(0); // Reset về trang 1 khi đổi bộ lọc
+        setCurrentPage(0);
+    };
+
+    // --- XỬ LÝ TÌM KIẾM ---
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(0); // Reset về trang đầu khi bắt đầu gõ tìm kiếm
     };
 
     // --- XỬ LÝ FORM ---
@@ -129,15 +137,14 @@ function ProductManagement() {
             ...formData,
             price: parseFloat(formData.price),
             quantity: parseInt(formData.quantity, 10),
-            // Lưu ý: Backend đang nhận DTO có thể cần categoryId hoặc categoryName
-            // Tạm thời giữ nguyên logic cũ là gửi tên category
             categoryId: parseInt(formData.categoryId, 10),
         };
 
         try {
             await addProduct(newProductData);
             setOpenAddDialog(false);
-            fetchProducts(currentPage, selectedCategoryId); // Tải lại trang hiện tại
+            // Sau khi thêm, tải lại danh sách hiện tại
+            fetchProducts(currentPage, selectedCategoryId, searchTerm);
         } catch (error) {
             setErrors({ api: "Không thể thêm sản phẩm. Vui lòng thử lại." });
         }
@@ -146,10 +153,9 @@ function ProductManagement() {
     // --- ACTIONS (UPDATE) ---
     const handleEditProduct = (product) => {
         setCurrentProduct(product);
-        // setFormData(product);
         setFormData({
             ...product,
-            categoryId: product.category ? product.category.id : product.categoryId // Ví dụ logic lấy ID
+            categoryId: product.category ? product.category.id : product.categoryId
         });
         setErrors({});
         setOpenEditDialog(true);
@@ -169,7 +175,7 @@ function ProductManagement() {
             setOpenEditDialog(false);
             setCurrentProduct(null);
             setFormData(emptyForm);
-            fetchProducts(currentPage, selectedCategoryId);
+            fetchProducts(currentPage, selectedCategoryId, searchTerm);
         } catch (error) {
             setErrors({ api: "Không thể cập nhật sản phẩm. Vui lòng thử lại." });
         }
@@ -187,7 +193,7 @@ function ProductManagement() {
                 await deleteProduct(currentProduct.id);
                 setOpenDeleteDialog(false);
                 setCurrentProduct(null);
-                fetchProducts(currentPage, selectedCategoryId);
+                fetchProducts(currentPage, selectedCategoryId, searchTerm);
             } catch (error) {
                 setOpenDeleteDialog(false);
                 setApiError("Không thể xóa sản phẩm. Vui lòng thử lại.");
@@ -201,7 +207,7 @@ function ProductManagement() {
         setOpenViewDialog(true);
     };
 
-    // --- RENDER FORM ---
+    // --- RENDER FORM FIELDS ---
     const renderFormFields = () => (
         <>
             {errors.api && <div className={styles.apiError}>{errors.api}</div>}
@@ -217,29 +223,23 @@ function ProductManagement() {
                 {errors.name && <span className={styles.helperText}>{errors.name}</span>}
             </div>
 
-            {/* Dropdown chọn loại sản phẩm khi thêm/sửa */}
-        <div className={styles.formGroup}>
-                        <label htmlFor="categoryName" className={styles.label}>Loại sản phẩm <span className={styles.requiredStar}>*</span></label>
-
-                        {/* Thay bằng thẻ SELECT để hiển thị danh sách */}
-                        <select
-                            id="categoryId"
-                            name="categoryId"
-                            className={`${styles.input} ${errors.categoryId ? styles.inputError : ''}`}
-                            value={formData.categoryId}
-                            onChange={handleFormChange}
-                        >
-
-                            {/* Duyệt qua danh sách categories đã tải từ API */}
-                            {categories.map((cat) => (
-                                <option key={cat.id} value={cat.id}>
-                                    {cat.name}
-                                </option>
-                            ))}
-                        </select>
-
-                        {errors.categoryId && <span className={styles.helperText}>{errors.categoryId}</span>}
-                    </div>
+            <div className={styles.formGroup}>
+                <label htmlFor="categoryId" className={styles.label}>Loại sản phẩm <span className={styles.requiredStar}>*</span></label>
+                <select
+                    id="categoryId"
+                    name="categoryId"
+                    className={`${styles.input} ${errors.categoryId ? styles.inputError : ''}`}
+                    value={formData.categoryId}
+                    onChange={handleFormChange}
+                >
+                    {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                            {cat.name}
+                        </option>
+                    ))}
+                </select>
+                {errors.categoryId && <span className={styles.helperText}>{errors.categoryId}</span>}
+            </div>
 
             <div className={styles.formGroup}>
                 <label className={styles.label}>Số lượng <span className={styles.requiredStar}>*</span></label>
@@ -281,7 +281,6 @@ function ProductManagement() {
             {/* Toolbar */}
             <div className={`${styles.paper} ${styles.toolbar}`}>
                 <div className={styles.filterControls}>
-                    {/* Tìm kiếm Client-side (nếu muốn) hoặc Server-side (cần cập nhật API) */}
                     <div className={styles.searchBox}>
                         <div className={styles.searchInputWrapper}>
                             <span className={styles.searchIcon}><MdSearch /></span>
@@ -289,13 +288,12 @@ function ProductManagement() {
                                 type="text"
                                 placeholder="Tìm kiếm theo tên..."
                                 value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onChange={handleSearchChange} // Gọi hàm xử lý search mới
                                 className={styles.searchInput}
                             />
                         </div>
                     </div>
 
-                    {/* Dropdown Lọc Server-side */}
                     <div className={styles.categoryFilter}>
                         <select
                             className={styles.categorySelect}
@@ -303,7 +301,6 @@ function ProductManagement() {
                             onChange={handleCategoryFilterChange}
                         >
                             <option value="All">Tất cả</option>
-                            {/* Render danh sách category lấy từ API */}
                             {categories.map((cat) => (
                                 <option key={cat.id} value={cat.id}>
                                     {cat.name}
@@ -343,10 +340,8 @@ function ProductManagement() {
                         {isLoading ? (
                             <tr><td colSpan={6} className={styles.tableCellLoading}>Đang tải dữ liệu...</td></tr>
                         ) : (
-                            // Lọc tìm kiếm ở client-side (tạm thời)
-                            products
-                                .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
-                                .map((product) => (
+                            // --- ĐÃ SỬA: XÓA FILTER Ở ĐÂY, HIỂN THỊ TRỰC TIẾP ---
+                            products.map((product) => (
                                 <tr key={product.id} className={styles.tableRow}>
                                     <td className={styles.tableCell}>{product.id}</td>
                                     <td className={styles.tableCell}>{product.name}</td>
@@ -361,33 +356,40 @@ function ProductManagement() {
                                 </tr>
                             ))
                         )}
+                        {/* Hiển thị thông báo nếu không tìm thấy gì */}
+                        {!isLoading && products.length === 0 && (
+                            <tr>
+                                <td colSpan={6} style={{ textAlign: 'center', padding: '20px' }}>
+                                    Không tìm thấy sản phẩm nào.
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
 
-            {/* --- PHÂN TRANG (MỚI) --- */}
-            <div className={styles.pagination}>
-                <button
-                    disabled={currentPage === 0}
-                    onClick={() => setCurrentPage(prev => prev - 1)}
-                    className={styles.pageButton}
-                >
-                    Trước
-                </button>
-                <span className={styles.pageInfo}>Trang {currentPage + 1} / {totalPages || 1}</span>
-                <button
-                    disabled={currentPage >= totalPages - 1}
-                    onClick={() => setCurrentPage(prev => prev + 1)}
-                    className={styles.pageButton}
-                >
-                    Sau
-                </button>
-            </div>
+            {/* --- PHÂN TRANG: ẨN KHI ĐANG TÌM KIẾM (!searchTerm) --- */}
+            {!searchTerm && (
+                <div className={styles.pagination}>
+                    <button
+                        disabled={currentPage === 0}
+                        onClick={() => setCurrentPage(prev => prev - 1)}
+                        className={styles.pageButton}
+                    >
+                        Trước
+                    </button>
+                    <span className={styles.pageInfo}>Trang {currentPage + 1} / {totalPages || 1}</span>
+                    <button
+                        disabled={currentPage >= totalPages - 1}
+                        onClick={() => setCurrentPage(prev => prev + 1)}
+                        className={styles.pageButton}
+                    >
+                        Sau
+                    </button>
+                </div>
+            )}
 
-            {/* ... Các Dialog Add/Edit/Delete/View giữ nguyên như cũ ... */}
-            {/* (Tôi lược bớt phần JSX Dialog để code ngắn gọn, bạn giữ nguyên phần đó nhé) */}
-
-            {/* --- (CREATE) DIALOG THÊM MỚI --- */}
+            {/* --- (CREATE) DIALOG --- */}
             <div className={`${styles.dialogOverlay} ${openAddDialog ? styles.dialogOpen : ''}`} onClick={() => setOpenAddDialog(false)}>
                 <div className={styles.dialogContent} onClick={(e) => e.stopPropagation()}>
                     <form onSubmit={(e) => { e.preventDefault(); handleSaveNewProduct(); }}>
@@ -400,6 +402,7 @@ function ProductManagement() {
                     </form>
                 </div>
             </div>
+
              {/* --- (UPDATE) DIALOG --- */}
             <div className={`${styles.dialogOverlay} ${openEditDialog ? styles.dialogOpen : ''}`} onClick={() => setOpenEditDialog(false)}>
                 <div className={styles.dialogContent} onClick={(e) => e.stopPropagation()}>
@@ -413,7 +416,8 @@ function ProductManagement() {
                     </form>
                 </div>
             </div>
-             {/* --- DELETE & VIEW Dialogs (Giữ nguyên code cũ của bạn) --- */}
+
+             {/* --- DELETE DIALOG --- */}
              <div className={`${styles.dialogOverlay} ${openDeleteDialog ? styles.dialogOpen : ''}`} onClick={() => setOpenDeleteDialog(false)}>
                 <div className={styles.dialogContent} onClick={(e) => e.stopPropagation()}>
                     <h2 className={styles.dialogTitle}>Xác nhận Xóa</h2>
@@ -424,13 +428,15 @@ function ProductManagement() {
                     </div>
                 </div>
             </div>
+
+             {/* --- VIEW DIALOG --- */}
              <div className={`${styles.dialogOverlay} ${openViewDialog ? styles.dialogOpen : ''}`} onClick={() => setOpenViewDialog(false)}>
                 <div className={styles.dialogContent} onClick={(e) => e.stopPropagation()}>
                     <h2 className={styles.dialogTitle}>Chi tiết sản phẩm</h2>
                     {currentProduct && (
                         <div>
                             <p><strong>Tên:</strong> {currentProduct.name}</p>
-                            <p><strong>Giá:</strong> {currentProduct.price}</p>
+                            <p><strong>Giá:</strong> {currentProduct.price ? parseFloat(currentProduct.price).toLocaleString() : 0} VNĐ</p>
                             <p><strong>Loại:</strong> {currentProduct.categoryName}</p>
                             <p><strong>Số lượng:</strong> {currentProduct.quantity}</p>
                             <p><strong>Mô tả:</strong> {currentProduct.description}</p>
