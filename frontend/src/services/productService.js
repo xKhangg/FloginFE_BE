@@ -153,6 +153,6 @@ export const getProducts = (page = 0, categoryId = null) => {
     }
     return apiClient.get(url);
 };
-export const addProduct = (productData) => apiClient.post('/api/products', productData);
-export const updateProduct = (id, productData) => apiClient.put(`/api/products/${id}`, productData);
-export const deleteProduct = (id) => apiClient.delete(`/api/products/${id}`);
+export const addProduct = (productData) => apiClient.post('/products', productData);
+export const updateProduct = (id, productData) => apiClient.put(`/products/${id}`, productData);
+export const deleteProduct = (id) => apiClient.delete(`/products/${id}`);
