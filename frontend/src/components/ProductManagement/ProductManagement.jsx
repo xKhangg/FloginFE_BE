@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import styles from './ProductManagement.module.css'; 
+import styles from './ProductManagement.module.css';
 
 // --- IMPORT API ---
-import { 
-    getProducts, 
-    addProduct, 
-    updateProduct, 
-    deleteProduct 
+import {
+    getProducts,
+    addProduct,
+    updateProduct,
+    deleteProduct
 } from '../../services/productService';
 
 // Import thêm service Category mới (bạn nhớ tạo file này nhé)
-import { getAllCategories } from '../../services/categoryService'; 
+import { getAllCategories } from '../../services/categoryService';
 
 import {
     MdVisibility,
@@ -24,7 +24,7 @@ const emptyForm = {
     name: '',
     price: '',
     quantity: '',
-    categoryName: '', // Lưu ý: Form thêm mới vẫn cần nhập tên category hoặc chọn từ dropdown (tùy logic bạn muốn)
+    categoryId: '', // Lưu ý: Form thêm mới vẫn cần nhập tên category hoặc chọn từ dropdown (tùy logic bạn muốn)
     description: '',
 };
 
@@ -33,7 +33,7 @@ function ProductManagement() {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]); // Danh sách loại lấy từ Server
     const [isLoading, setIsLoading] = useState(false);
-    
+
     // --- STATE BỘ LỌC & PHÂN TRANG ---
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategoryId, setSelectedCategoryId] = useState('All'); // Lọc theo ID hoặc 'All'
@@ -73,13 +73,13 @@ function ProductManagement() {
         try {
             // Xử lý tham số lọc category (nếu 'All' thì gửi null hoặc không gửi)
             const idToSend = (catId === 'All' || catId === '') ? null : catId;
-            
+
             // Gọi API: getProducts(page, categoryId)
             const response = await getProducts(page, idToSend);
-            
+
             // Cập nhật state từ response của Spring Page<ProductDTO>
             setProducts(response.data.content || []);
-            setTotalPages(response.data.totalPages || 0); 
+            setTotalPages(response.data.totalPages || 0);
 
         } catch (error) {
             console.error("Lỗi khi tải sản phẩm:", error);
@@ -109,7 +109,7 @@ function ProductManagement() {
     const validateForm = () => {
         const newErrors = {};
         if (!formData.name) newErrors.name = "Tên sản phẩm là bắt buộc";
-        if (!formData.categoryName) newErrors.categoryName = "Loại sản phẩm là bắt buộc";
+        if (!formData.categoryId) newErrors.categoryId = "Loại sản phẩm là bắt buộc";
         if (!formData.quantity || formData.quantity <= 0) newErrors.quantity = "Số lượng phải lớn hơn 0";
         if (!formData.price || parseFloat(formData.price) <= 0) newErrors.price = "Giá phải lớn hơn 0";
         setErrors(newErrors);
@@ -122,7 +122,7 @@ function ProductManagement() {
         setErrors({});
         setOpenAddDialog(true);
     };
-    
+
     const handleSaveNewProduct = async () => {
         if (!validateForm()) return;
         const newProductData = {
@@ -131,7 +131,7 @@ function ProductManagement() {
             quantity: parseInt(formData.quantity, 10),
             // Lưu ý: Backend đang nhận DTO có thể cần categoryId hoặc categoryName
             // Tạm thời giữ nguyên logic cũ là gửi tên category
-            categoryName: formData.categoryName, 
+            categoryId: parseInt(formData.categoryId, 10),
         };
 
         try {
@@ -146,7 +146,11 @@ function ProductManagement() {
     // --- ACTIONS (UPDATE) ---
     const handleEditProduct = (product) => {
         setCurrentProduct(product);
-        setFormData(product);
+        // setFormData(product);
+        setFormData({
+            ...product,
+            categoryId: product.category ? product.category.id : product.categoryId // Ví dụ logic lấy ID
+        });
         setErrors({});
         setOpenEditDialog(true);
     };
@@ -157,7 +161,7 @@ function ProductManagement() {
             ...formData,
             price: parseFloat(formData.price),
             quantity: parseInt(formData.quantity, 10),
-            categoryName: formData.categoryName,
+            categoryId: parseInt(formData.categoryId, 10),
         };
 
         try {
@@ -212,29 +216,29 @@ function ProductManagement() {
                 />
                 {errors.name && <span className={styles.helperText}>{errors.name}</span>}
             </div>
-            
+
             {/* Dropdown chọn loại sản phẩm khi thêm/sửa */}
         <div className={styles.formGroup}>
                         <label htmlFor="categoryName" className={styles.label}>Loại sản phẩm <span className={styles.requiredStar}>*</span></label>
 
                         {/* Thay bằng thẻ SELECT để hiển thị danh sách */}
                         <select
-                            id="categoryName"
-                            name="categoryName"
-                            className={`${styles.input} ${errors.categoryName ? styles.inputError : ''}`}
-                            value={formData.categoryName}
+                            id="categoryId"
+                            name="categoryId"
+                            className={`${styles.input} ${errors.categoryId ? styles.inputError : ''}`}
+                            value={formData.categoryId}
                             onChange={handleFormChange}
                         >
 
                             {/* Duyệt qua danh sách categories đã tải từ API */}
                             {categories.map((cat) => (
-                                <option key={cat.id} value={cat.name}>
+                                <option key={cat.id} value={cat.id}>
                                     {cat.name}
                                 </option>
                             ))}
                         </select>
 
-                        {errors.categoryName && <span className={styles.helperText}>{errors.categoryName}</span>}
+                        {errors.categoryId && <span className={styles.helperText}>{errors.categoryId}</span>}
                     </div>
 
             <div className={styles.formGroup}>
@@ -363,16 +367,16 @@ function ProductManagement() {
 
             {/* --- PHÂN TRANG (MỚI) --- */}
             <div className={styles.pagination}>
-                <button 
-                    disabled={currentPage === 0} 
+                <button
+                    disabled={currentPage === 0}
                     onClick={() => setCurrentPage(prev => prev - 1)}
                     className={styles.pageButton}
                 >
                     Trước
                 </button>
                 <span className={styles.pageInfo}>Trang {currentPage + 1} / {totalPages || 1}</span>
-                <button 
-                    disabled={currentPage >= totalPages - 1} 
+                <button
+                    disabled={currentPage >= totalPages - 1}
                     onClick={() => setCurrentPage(prev => prev + 1)}
                     className={styles.pageButton}
                 >
@@ -382,7 +386,7 @@ function ProductManagement() {
 
             {/* ... Các Dialog Add/Edit/Delete/View giữ nguyên như cũ ... */}
             {/* (Tôi lược bớt phần JSX Dialog để code ngắn gọn, bạn giữ nguyên phần đó nhé) */}
-            
+
             {/* --- (CREATE) DIALOG THÊM MỚI --- */}
             <div className={`${styles.dialogOverlay} ${openAddDialog ? styles.dialogOpen : ''}`} onClick={() => setOpenAddDialog(false)}>
                 <div className={styles.dialogContent} onClick={(e) => e.stopPropagation()}>
