@@ -5,6 +5,7 @@ import com.flogin.dto.LoginResponse;
 import com.flogin.entity.UserEntity;
 import com.flogin.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -13,6 +14,8 @@ import java.util.Optional;
 public class AuthService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     public LoginResponse authenticate(LoginRequest loginRequest) {
         Optional<UserEntity> userOptional = userRepository.findByUsername(loginRequest.getUsername());
 
@@ -22,7 +25,7 @@ public class AuthService {
 
         UserEntity user = userOptional.get();
 
-        if (!user.getPassword().equals(loginRequest.getPassword())) {
+        if (!passwordEncoder.matches((loginRequest.getPassword()),user.getPassword())) {
             return new LoginResponse(false, "Username/password không đúng");
         }
 

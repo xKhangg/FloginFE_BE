@@ -103,5 +103,5 @@ SELECT 'Bản Thiết Kế Vĩ Đại', 160000, 25, 'Tác giả: Stephen Hawking
     WHERE NOT EXISTS (SELECT 1 FROM products WHERE name = 'Bản Thiết Kế Vĩ Đại');
 
 INSERT INTO users (username, password)
-SELECT 'testuser', 'Test123'
+SELECT 'testuser','$2a$10$8K1p/a0d0d0d0d0d0d0d0u.d0d0d0d0d0d0d0d0d0d0d0d0d0d0'
     WHERE NOT EXISTS (SELECT 1 FROM `users` WHERE username = 'testuser');
