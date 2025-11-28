@@ -5,6 +5,7 @@ import com.flogin.entity.ProductEntity;
 import com.flogin.repository.CategoryRepository;
 import com.flogin.repository.ProductRepository;
 import com.flogin.service.ProductService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -131,17 +132,6 @@ public class ProductServiceUnitTest {
         newProductDTO.setCategoryId(newCategoryEntity.getId());
         newProductDTO.setCategoryName(newCategoryEntity.getName());
 
-        /*
-        1. 📦 "Hộp" Optional là gì?
-        Từ Java 8, các lập trình viên được khuyến khích không trả về null (vì dễ gây NullPointerException). Thay vào đó, họ dùng Optional.
-        Optional là một "cái hộp":
-        Hộp có chứa đồ (value): Nếu tìm thấy, nó trả về một Optional chứa giá trị đó.
-        Hộp rỗng (empty): Nếu không tìm thấy, nó trả về một Optional.empty() (hộp rỗng).
-        2. 📖 Tại sao bạn bắt buộc phải dùng nó trong Test?
-        Vấn đề nằm ở chữ ký (signature) của hàm findById trong JpaRepository:
-        Hàm productRepository.findById(id) không trả về ProductEntity.
-        Nó trả về Optional<ProductEntity> (một cái hộp có thể chứa ProductEntity).
-         */
         when(categoryRepository.findById(eq(newCategoryEntity.getId())))
                 .thenReturn(Optional.of(newCategoryEntity));
         when(productRepository.findById(eq(productId)))
@@ -244,5 +234,106 @@ public class ProductServiceUnitTest {
 
         //VERIFY
         verify(productRepository, times(1)).delete(any(ProductEntity.class));
+    }
+
+    @Test
+    @DisplayName("Xóa sản phẩm thất bại: ID không tồn tại")
+    void testDeleteProduct_NotFound() {
+        // ARRANGE
+        when(productRepository.findById(eq(999)))
+                .thenReturn(Optional.empty());
+
+        // ACT & ASSERT
+        assertThrows(EntityNotFoundException.class, () -> {
+            productService.deleteProduct(999);
+        });
+
+        // VERIFY
+        verify(productRepository, times(1)).findById(eq(999));
+        verify(productRepository, never()).delete(any());
+    }
+
+    @Test
+    @DisplayName("Xóa sản phẩm thất bại: Input là Null")
+    void testDeleteProduct_NullId() {
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class, () -> { // Mong đợi IllegalArgumentException
+            productService.deleteProduct(null);
+        });
+
+        // VERIFY
+        verifyNoInteractions(productRepository);
+    }
+
+    @Test
+    @DisplayName("Tạo sản phẩm thất bại: Category không tồn tại")
+    void testCreateProduct_CategoryNotFound() {
+        // ARRANGE
+        // Giả lập Category trả về rỗng
+        when(categoryRepository.findById(anyInt()))
+                .thenReturn(Optional.empty());
+
+        // ACT & ASSERT
+        assertThrows(EntityNotFoundException.class, () -> {
+            productService.createProduct(productDTO);
+        });
+
+        // VERIFY
+        verify(categoryRepository, times(1)).findById(anyInt());
+        // Đảm bảo KHÔNG lưu sản phẩm
+        verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Lấy sản phẩm thất bại: ID không tồn tại")
+    void testGetProduct_NotFound() {
+        // ARRANGE
+        // Giả lập tìm trong DB nhưng trả về Rỗng (Empty)
+        when(productRepository.findById(eq(999)))
+                .thenReturn(Optional.empty());
+
+        // ACT & ASSERT
+        // Kiểm tra xem Service có ném ra lỗi EntityNotFoundException không
+        assertThrows(EntityNotFoundException.class, () -> {
+            productService.getProductByID(999);
+        });
+
+        // VERIFY
+        verify(productRepository, times(1)).findById(eq(999));
+        // Đảm bảo Mapper KHÔNG BAO GIỜ được gọi (vì lỗi ném ra trước đó)
+        verifyNoInteractions(productMapper);
+    }
+
+    @Test
+    @DisplayName("Cập nhật thất bại: Product ID là null")
+    void testUpdateProduct_NullId() {
+        // ACT & ASSERT
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            productService.updateProduct(null, productDTO);
+        });
+
+        assertEquals("Tham số truyền vào productId không được null", exception.getMessage());
+
+        // VERIFY
+        verifyNoInteractions(categoryRepository);
+        verifyNoInteractions(productRepository);
+        verifyNoInteractions(productMapper);
+    }
+
+    @Test
+    @DisplayName("Cập nhật thất bại: ProductDTO là null")
+    void testUpdateProduct_NullDTO() {
+        // ACT & ASSERT
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            productService.updateProduct(productId, null);
+        });
+
+        // Kiểm tra message lỗi
+        assertEquals("Tham số truyền vào productDTO không được null", exception.getMessage());
+
+        // VERIFY
+        verifyNoInteractions(categoryRepository);
+        verifyNoInteractions(productRepository);
+        verifyNoInteractions(productMapper);
     }
 }
