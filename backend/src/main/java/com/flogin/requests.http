@@ -151,7 +151,7 @@ GET {{baseUrl}}/{{productId}}
 # Kịch bản: Kẻ tấn công cố gắng chèn mã SQL vào tham số tìm kiếm
 # Payload: ' OR '1'='1
 # Mong đợi: Hệ thống không bị crash (500) và không trả về toàn bộ DB (nếu logic đúng)
-GET {{baseUrl}}?search=' OR '1'='1
+GET {{baseUrl}}?name=' OR '1'='1
 
 > {%
     client.test("SQL Injection: Hệ thống an toàn (Không 500)", function() {
