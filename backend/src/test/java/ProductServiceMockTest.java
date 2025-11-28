@@ -146,7 +146,7 @@ public class ProductServiceMockTest {
     @DisplayName("Lấy danh sách tất cả sản phẩm (phân trang)")
     void testGetAllProductsPaginated_AllCategories(){
         //ARRANGE
-        when(productRepository.searchProducts(anyString(), anyInt(), (any(Pageable.class))))
+        when(productRepository.searchProducts(any(), any(), (any(Pageable.class))))
                 .thenReturn(mockProductEntityPage);
         when(productMapper.toDTO(any(ProductEntity.class)))
                 .thenReturn(mockProductDTO);
@@ -164,7 +164,7 @@ public class ProductServiceMockTest {
         assertEquals(1, resultPage.getContent().size());
 
         //VERIFY
-        verify(productRepository, times(1)).searchProducts(anyString(), anyInt(), any(Pageable.class));
+        verify(productRepository, times(1)).searchProducts(any(), any(), any(Pageable.class));
         verify(productMapper, times(1))
                 .toDTO(any(ProductEntity.class));
     }
