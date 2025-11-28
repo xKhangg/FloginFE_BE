@@ -19,7 +19,7 @@ class ProductPage {
         nameInput: () => cy.get('input[name="name"]').filter(':visible'),
         priceInput: () => cy.get('input[name="price"]').filter(':visible'),
         quantityInput: () => cy.get('input[name="quantity"]').filter(':visible'),
-        categoryInput: () => cy.get('select[name="categoryName"]').filter(':visible'), // Select trong Form
+        categoryInput: () => cy.get('select[name="categoryId"]').filter(':visible'), // Select trong Form
         descriptionInput: () => cy.get('textarea[name="description"]').filter(':visible'),
 
         // Nút trong Dialog
@@ -73,7 +73,7 @@ class ProductPage {
 
     submitCreate() {
         this.elements.saveBtn().click();
-        this.elements.addDialogTitle().should('not.exist'); // Đợi dialog đóng
+        // this.elements.addDialogTitle().should('not.exist'); // Đợi dialog đóng
     }
 
     // --- Nghiệp vụ Sửa ---
@@ -110,7 +110,13 @@ class ProductPage {
 
     // --- Helpers ---
     verifyProductVisible(name) {
-        cy.contains('table tbody tr', name).should('be.visible');
+        cy.contains('td', 'Đang tải dữ liệu...').should('not.exist');
+
+        // 2. Tìm dòng (tr) chứa tên sản phẩm
+        // .scrollIntoView(): Giúp test không bị lỗi nếu sản phẩm nằm ở cuối danh sách dài
+        cy.contains('table tbody tr', name)
+            .scrollIntoView()
+            .should('be.visible');
     }
 
     verifyProductNotVisible(name) {

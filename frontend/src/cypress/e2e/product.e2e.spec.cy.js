@@ -148,9 +148,41 @@ describe('Product Management E2E Tests using POM', () => {
         });
     });
 
+    it('Validation: Nên hiện lỗi khi nhập dữ liệu không hợp lệ', () => {
+        // 1. Mở form
+        productPage.openAddModal();
+
+        // 2. Nhập giá âm (Sai logic)
+        productPage.fillProductForm({
+            name: '',       // Để trống tên
+            price: '-50000' // Giá âm
+        });
+
+        // 3. Bấm Submit
+        productPage.submitCreate();
+
+        // 4. VERIFY:
+        // - Dialog vẫn mở (Chưa đóng)
+        productPage.elements.addDialogTitle().should('be.visible');
+        // - Có thông báo lỗi (Tùy code React của bạn hiển thị thế nào)
+        cy.contains('Tên sản phẩm không được để trống').should('be.visible');
+        cy.contains('Giá phải lớn hơn 0').should('be.visible');
+    });
+
 });
 
 describe('Security Test: XSS Vulnerability', () => {
+    beforeEach(() => {
+        cy.session('user-session', () => {
+            LoginPage.open();
+            LoginPage.login('testuser', 'Test123'); // Nhớ sửa pass
+            // Đợi login thành công (quan trọng)
+            cy.url().should('not.include', '/login');
+        });
+
+        productPage.visit();
+    });
+
     it('Nên ngăn chặn thực thi mã độc JavaScript (XSS)', () => {
         // 1. Chuẩn bị payload độc hại
         const xssPayload = "<script>alert('Hacked')</script>";

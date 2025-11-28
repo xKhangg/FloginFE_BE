@@ -259,3 +259,20 @@ Content-Type: application/json
 
 # Dọn dẹp dữ liệu rác của test bảo mật (Xóa sản phẩm XSS)
 DELETE {{baseUrl}}/{{xssProductId}}
+
+### Test Input Validation (Backend)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "name": "",
+  "price": -100,
+  "quantity": 10,
+  "categoryId": 1
+}
+
+> {%
+    client.test("Backend chặn dữ liệu rác", function() {
+        client.assert(response.status === 400, "Phải trả về 400 Bad Request");
+    });
+%}
