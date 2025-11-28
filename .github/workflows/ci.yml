@@ -45,8 +45,7 @@ jobs:
       - name: Backend - Build & Unit Test
         run: |
           cd backend
-          chmod +x mvnw
-          ./mvnw clean test
+          mvn clean test
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/FloginFE_BE
           SPRING_DATASOURCE_USERNAME: root
