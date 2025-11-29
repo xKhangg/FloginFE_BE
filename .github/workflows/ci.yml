@@ -55,6 +55,7 @@ jobs:
         run: |
           cd frontend
           npm ci
+          npm run build
 
       - name: Frontend - Unit Test (Product Only)
         # THÊM DÒNG NÀY: Cho phép chạy tiếp dù test frontend bị fail
@@ -83,7 +84,7 @@ jobs:
       - name: Start Frontend Server
         run: |
           cd frontend
-          npm start &
+          npx serve -s build -l 3000 &
         env:
           BROWSER: none
 
@@ -93,7 +94,7 @@ jobs:
         with:
           working-directory: frontend
           wait-on: 'http://localhost:3000, http://localhost:8080'
-          wait-on-timeout: 120
+          wait-on-timeout: 300
           browser: chrome
           # Chỉ chạy các file test E2E có tên chứa chữ "product"
           spec: cypress/e2e/*product*.cy.js
