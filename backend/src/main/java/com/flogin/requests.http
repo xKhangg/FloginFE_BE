@@ -8,14 +8,10 @@ GET {{baseUrl}}?page=0
 
 > {%
     client.test("Lấy danh sách thành công", function() {
-        // 1. Kiểm tra status 200 OK
         client.assert(response.status === 200, "Status code phải là 200");
 
-        // 2. Kiểm tra xem kết quả trả về có phải là dạng Page không
-        // (Page phải có trường 'content' là một mảng)
         client.assert(Array.isArray(response.body.content), "Phản hồi phải chứa mảng 'content'");
 
-        // 3. Kiểm tra các thông tin phân trang khác (tùy chọn)
         client.log("Tổng số trang: " + response.body.totalPages);
         client.log("Tổng số sản phẩm: " + response.body.totalElements);
     });
@@ -32,7 +28,6 @@ GET {{baseUrl}}?page=0&categoryId=1
     client.test("Lọc theo category thành công", function() {
         client.assert(response.status === 200, "Status code phải là 200");
 
-        // Kiểm tra sản phẩm đầu tiên (nếu có) xem có đúng categoryId = 1 không
         if (response.body.content.length > 0) {
             client.assert(response.body.content[0].categoryId === 1, "Sản phẩm phải thuộc Category 1");
         }
@@ -56,18 +51,13 @@ Content-Type: application/json
 }
 
 > {%
-    // 1. In ra status code để kiểm tra
     client.log("Status Code nhận được: " + response.status);
 
-    // 2. Kiểm tra xem request có thành công không (201 Created)
     if (response.status === 201) {
-        // Nếu thành công mới lấy ID
         client.global.set("productId", response.body.id);
         client.log("✅ Thành công! Đã lưu ID: " + response.body.id);
     } else {
-        // Nếu thất bại, in ra lỗi để sửa
         client.log("❌ Thất bại! Server trả về lỗi.");
-        // Nếu body không null thì in ra body lỗi
         if (response.body) {
             client.log("Chi tiết lỗi: " + JSON.stringify(response.body));
         }
@@ -128,7 +118,7 @@ DELETE {{baseUrl}}/{{productId}}
 ###
 
 # ==========================================
-# 7. KIỂM TRA LẠI (GET) - Mong đợi lỗi 404
+# 7. KIỂM TRA LẠI (GET)
 # ==========================================
 GET {{baseUrl}}/{{productId}}
 
@@ -142,24 +132,20 @@ GET {{baseUrl}}/{{productId}}
 ###
 
 # =================================================================
-# PHẦN B: SECURITY TESTING (5 ĐIỂM)
+# PHẦN B: SECURITY TESTING
 # =================================================================
 
 # ==========================================
-# 8. TEST SQL INJECTION (Vào ô Search)
+# 8. TEST SQL INJECTION
 # ==========================================
 GET {{baseUrl}}?name=' OR '1'='1
 
 > {%
     client.test("SQL Injection: Hệ thống an toàn (Không 500)", function() {
-        // 1. Không được sập nguồn (500 Internal Server Error)
         client.assert(response.status !== 500, "LỖI: Có vẻ dính SQL Injection (Server Error)");
 
-        // 2. Kiểm tra status 200 (Hệ thống xử lý được chuỗi lạ)
         client.assert(response.status === 200, "Status code nên là 200 (Xử lý an toàn)");
 
-        // 3. (Tùy chọn) Kiểm tra kết quả trả về rỗng (hoặc không thay đổi bất thường)
-        // Nếu trả về toàn bộ DB -> Dính lỗi. Nếu trả về rỗng -> An toàn.
         client.log("Số lượng bản ghi trả về: " + response.body.content.length);
     });
 %}
@@ -169,8 +155,6 @@ GET {{baseUrl}}?name=' OR '1'='1
 # ==========================================
 # 9. TEST AUTHENTICATION BYPASS (Cố xóa không quyền)
 # ==========================================
-# Kịch bản: Kẻ tấn công gọi API Xóa (hoặc API nhạy cảm) mà không đăng nhập
-# Lưu ý: Test này chỉ XANH (Pass) nếu bạn đã cấu hình .authenticated() cho DELETE
 POST {{baseUrl}}
 Content-Type: application/json
 
@@ -208,9 +192,6 @@ DELETE {{baseUrl}}/{{productId1}}
 # ==========================================
 # 10. TEST CSRF (Cross-Site Request Forgery)
 # ==========================================
-# Kịch bản: Gửi POST request mà không có CSRF Token
-# Vì bạn đã tắt CSRF (.disable), request này sẽ THÀNH CÔNG (201).
-# Trong báo cáo, bạn giải thích đây là REST API Stateless nên disable là hợp lý.
 POST {{baseUrl}}
 Content-Type: application/json
 
@@ -225,7 +206,6 @@ Content-Type: application/json
     client.test("CSRF Check", function() {
         if (response.status === 201) {
             client.log("ℹ️ INFO: Request thành công. CSRF đang tắt (Đúng với thiết kế REST API).");
-            // Xóa ID rác vừa tạo để dọn dẹp
             client.global.set("csrfProductId", response.body.id);
         } else if (response.status === 403) {
             client.log("✅ AN TOÀN: CSRF đang bật, request bị chặn.");
