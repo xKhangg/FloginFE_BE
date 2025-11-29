@@ -1,178 +1,103 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-// Danh sách category mặc định (để test hoặc fallback)
-const DEFAULT_CATEGORIES = [
-    { id: 1, name: 'Trinh thám' },
-    { id: 2, name: 'Thiếu nhi' },
-    { id: 3, name: 'Khoa học' }
-];
-
-const initialFormState = {
-    name: '',
-    price: '',
-    quantity: '',
-    categoryId: '',
-    description: ''
-};
-
-function ProductForm({ onSubmit, initialData = null, categories = DEFAULT_CATEGORIES, onCancel }) {
-    const [formData, setFormData] = useState(initialFormState);
+function ProductForm({ onSubmit }) {
+    const [formData, setFormData] = useState({
+        name: '',
+        price: '',
+        quantity: '',
+        category: '',
+        description: ''
+    });
     const [errors, setErrors] = useState({});
-
-    // --- 1. Xử lý điền dữ liệu khi ở chế độ Sửa (Edit Mode) ---
-    useEffect(() => {
-        if (initialData) {
-            setFormData({
-                name: initialData.name || '',
-                price: initialData.price || '',
-                quantity: initialData.quantity || '',
-                // Ưu tiên lấy categoryId, nếu không có thì lấy từ object category
-                categoryId: initialData.categoryId || (initialData.category ? initialData.category.id : ''),
-                description: initialData.description || ''
-            });
-        } else {
-            setFormData(initialFormState);
-        }
-    }, [initialData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    const validate = () => {
-        const newErrors = {};
-        if (!formData.name.trim()) newErrors.name = 'Tên sản phẩm là bắt buộc';
-        
-        const priceNum = Number(formData.price);
-        if (!formData.price || priceNum <= 0) newErrors.price = 'Giá phải lớn hơn 0';
-        
-        const quantityNum = Number(formData.quantity);
-        if (!formData.quantity || quantityNum < 0) newErrors.quantity = 'Số lượng không hợp lệ';
-        
-        if (!formData.categoryId) newErrors.categoryId = 'Loại sản phẩm là bắt buộc';
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (validate()) {
-            // Gửi dữ liệu đã được chuẩn hóa
-            onSubmit({
-                ...formData,
-                price: parseFloat(formData.price),
-                quantity: parseInt(formData.quantity, 10),
-                categoryId: parseInt(formData.categoryId, 10)
-            });
+        const newErrors = {};
+
+        // Validation Rules
+        if (!formData.name) newErrors.name = 'Tên sản phẩm là bắt buộc';
+        if (!formData.price || Number(formData.price) <= 0) newErrors.price = 'Giá phải lớn hơn 0';
+        if (!formData.quantity || Number(formData.quantity) < 0) newErrors.quantity = 'Số lượng không hợp lệ'; // Sửa lại logic check số lượng >= 0
+        if (!formData.category) newErrors.category = 'Loại sản phẩm là bắt buộc';
+
+        setErrors(newErrors);
+
+        if (Object.keys(newErrors).length === 0) {
+            // Nếu có prop onSubmit thì gọi nó (dùng để test)
+            if (onSubmit) {
+                onSubmit(formData);
+            }
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} aria-label="product-form" style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
-            <h3>{initialData ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'}</h3>
-
-            {/* Tên sản phẩm */}
-            <div style={{ marginBottom: '15px' }}>
-                <label htmlFor="name" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                    Tên sản phẩm
-                </label>
+        <form onSubmit={handleSubmit} aria-label="product-form">
+            <div>
+                <label htmlFor="name">Tên sản phẩm</label>
                 <input 
                     id="name" 
                     name="name" 
-                    type="text"
                     value={formData.name} 
-                    onChange={handleChange}
-                    style={{ width: '100%', padding: '8px' }}
+                    onChange={handleChange} 
                 />
-                {errors.name && <span role="alert" style={{ color: 'red', fontSize: '12px' }}>{errors.name}</span>}
+                {errors.name && <span role="alert">{errors.name}</span>}
             </div>
 
-            {/* Loại sản phẩm */}
-            <div style={{ marginBottom: '15px' }}>
-                <label htmlFor="categoryId" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                    Loại sản phẩm
-                </label>
+            <div>
+                <label htmlFor="category">Loại sản phẩm</label>
                 <select 
-                    id="categoryId" 
-                    name="categoryId" 
-                    value={formData.categoryId} 
+                    id="category" 
+                    name="category" 
+                    value={formData.category} 
                     onChange={handleChange}
-                    style={{ width: '100%', padding: '8px' }}
                 >
-                    <option value="">-- Chọn loại --</option>
-                    {categories.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                            {cat.name}
-                        </option>
-                    ))}
+                    <option value="">-- Chọn --</option>
+                    <option value="1">Trinh thám</option>
+                    <option value="2">Thiếu nhi</option>
                 </select>
-                {errors.categoryId && <span role="alert" style={{ color: 'red', fontSize: '12px' }}>{errors.categoryId}</span>}
+                {errors.category && <span role="alert">{errors.category}</span>}
             </div>
 
-            {/* Giá */}
-            <div style={{ marginBottom: '15px' }}>
-                <label htmlFor="price" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                    Giá
-                </label>
+            <div>
+                <label htmlFor="price">Giá</label>
                 <input 
                     id="price" 
                     name="price" 
                     type="number"
                     value={formData.price} 
                     onChange={handleChange} 
-                    style={{ width: '100%', padding: '8px' }}
                 />
-                {errors.price && <span role="alert" style={{ color: 'red', fontSize: '12px' }}>{errors.price}</span>}
+                {errors.price && <span role="alert">{errors.price}</span>}
             </div>
 
-            {/* Số lượng */}
-            <div style={{ marginBottom: '15px' }}>
-                <label htmlFor="quantity" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                    Số lượng
-                </label>
+            <div>
+                <label htmlFor="quantity">Số lượng</label>
                 <input 
                     id="quantity" 
                     name="quantity" 
                     type="number"
                     value={formData.quantity} 
                     onChange={handleChange} 
-                    style={{ width: '100%', padding: '8px' }}
                 />
-                {errors.quantity && <span role="alert" style={{ color: 'red', fontSize: '12px' }}>{errors.quantity}</span>}
+                {errors.quantity && <span role="alert">{errors.quantity}</span>}
             </div>
 
-            {/* Mô tả */}
-            <div style={{ marginBottom: '15px' }}>
-                <label htmlFor="description" style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                    Mô tả
-                </label>
+            <div>
+                <label htmlFor="description">Mô tả</label>
                 <textarea 
                     id="description" 
                     name="description" 
-                    rows="3"
                     value={formData.description} 
                     onChange={handleChange} 
-                    style={{ width: '100%', padding: '8px' }}
                 />
             </div>
 
-            <div style={{ display: 'flex', gap: '10px' }}>
-                <button type="submit" style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                    {initialData ? 'Cập nhật' : 'Lưu'}
-                </button>
-                
-                {onCancel && (
-                    <button 
-                        type="button" 
-                        onClick={onCancel}
-                        style={{ padding: '10px 20px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                    >
-                        Hủy
-                    </button>
-                )}
-            </div>
+            <button type="submit">Lưu</button>
         </form>
     );
 }

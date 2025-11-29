@@ -39,7 +39,6 @@ export const getProducts = (page = 0, categoryId = null, search = '', size = 5) 
     }
 
     // Nếu có từ khóa tìm kiếm thì thêm vào params (gửi key là 'name')
-    // Lưu ý: Backend của bạn phải có @RequestParam("name") String name
     if (search) {
         params.name = search; 
     }

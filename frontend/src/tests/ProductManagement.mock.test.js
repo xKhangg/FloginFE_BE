@@ -1,5 +1,5 @@
-/* eslint-disable testing-library/no-wait-for-multiple-assertions */
 /* eslint-disable testing-library/no-node-access */
+/* eslint-disable testing-library/no-container */
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -25,7 +25,7 @@ const mockedUpdateProduct = updateProduct;
 const mockedDeleteProduct = deleteProduct;
 const mockedGetAllCategories = getAllCategories;
 
-// 4. DỮ LIỆU GIẢ (Có categoryId để Edit hoạt động)
+// 4. DỮ LIỆU GIẢ 
 const MOCK_BOOKS = [
     { id: 1, name: 'Sherlock Holmes Toàn Tập', price: 350000, quantity: 10, categoryName: 'Trinh thám', categoryId: 1 },
     { id: 2, name: 'Dế Mèn Phiêu Lưu Ký', price: 80000, quantity: 50, categoryName: 'Thiếu nhi', categoryId: 2 },
@@ -146,13 +146,12 @@ describe('ProductManagement - Mock Tests (Simple Submit)', () => {
         // 2. Chờ form xuất hiện
         await screen.findByRole('button', { name: 'Cập nhật' });
 
-        // 3. Sửa giá (Tìm input giá trong form đang mở - form cuối cùng)
+        // 3. Sửa giá 
         const priceInputs = container.querySelectorAll('input[name="price"]');
         const editPriceInput = priceInputs[priceInputs.length - 1];
         if (editPriceInput) fireEvent.change(editPriceInput, { target: { value: '999000' } });
 
-        // 4. SUBMIT FORM TRỰC TIẾP (Chiến thuật mới)
-        // Form sửa là form cuối cùng trong DOM (vì nó render sau/đè lên)
+        // 4. SUBMIT FORM TRỰC TIẾP 
         const forms = container.querySelectorAll('form');
         const editForm = forms[forms.length - 1];
         

@@ -67,7 +67,6 @@ describe('Login - Mock Tests (Câu 4.1)', () => {
         fireEvent.click(screen.getByRole('button', { name: /Đăng nhập/i }));
 
         // Assert: Kiểm tra kết quả
-        // Bây giờ API sẽ được gọi, bị từ chối, và thông báo lỗi sẽ hiện ra
         await waitFor(() => {
             // Kiểm tra thông báo lỗi có hiện ra không
             expect(screen.getByText(errorMessage)).toBeInTheDocument();
