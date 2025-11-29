@@ -83,7 +83,7 @@ public class ProductControllerIntegrationTest {
 
         //VERIFY
         mockMvc.perform(get("/api/products")
-                        .param("page", "0") // (Tùy chọn) Giả lập gửi param
+                        .param("page", "0")
                         .param("size", "10")
                         .with(csrf()))
                 .andExpect(status().isOk())
@@ -105,10 +105,8 @@ public class ProductControllerIntegrationTest {
         //ACT & VERIFY
         mockMvc.perform(get("/api/products/" + productId)
                         .with(csrf()))
-                // 5. Mong đợi status 200 OK
                 .andExpect(status().isOk())
 
-                // 6. Mong đợi JSON trả về khớp với DTO
                 .andExpect(jsonPath("$.id").value(productId))
                 .andExpect(jsonPath("$.name").value("Book1"))
                 .andExpect(jsonPath("$.price").value(100_000D))
@@ -142,7 +140,6 @@ public class ProductControllerIntegrationTest {
                 .andExpect(jsonPath("$.categoryName").value("Trinh thám"))
                 .andExpect(jsonPath("$.description").value("Book1 for testing"));
 
-        // 8. (Tùy chọn) Verify rằng service đã được gọi 1 lần
         verify(productService, times(1)).createProduct(any(ProductDTO.class));
     }
 
@@ -164,13 +161,11 @@ public class ProductControllerIntegrationTest {
         // ----- ACT & VERIFY -----
         mockMvc.perform(put("/api/products/" + productId)
                         .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)   // 2. Gửi JSON
-                        .content(objectMapper.writeValueAsString(requestProductDTO))) // 3. Body là DTO request
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestProductDTO)))
 
-                // 4. Mong đợi status 200 OK (vì đây là Update)
                 .andExpect(status().isOk())
 
-                // 5. Kiểm tra JSON trả về (phải là responseDTO)
                 .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.name").value("Book2"))
                 .andExpect(jsonPath("$.price").value(150_000D))

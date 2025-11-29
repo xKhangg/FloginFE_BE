@@ -33,21 +33,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 
                 // ----------------------------------------------------------------
-                // 2. HTTPS Enforcement (Bắt buộc dùng HTTPS)
-                // ----------------------------------------------------------------
-//                .requiresChannel(channel ->
-//                        channel.anyRequest().requiresSecure() // Bắt buộc mọi request phải qua HTTPS
-//                )
-
-                // ----------------------------------------------------------------
-                // 3. Security Headers (Các header bảo mật)
+                // 2. Security Headers
                 // ----------------------------------------------------------------
                 .headers(headers -> headers
-                        // HSTS: Bắt buộc trình duyệt nhớ dùng HTTPS trong tương lai (1 năm)
-                        .httpStrictTransportSecurity(hsts -> hsts
-                                .includeSubDomains(true)
-                                .maxAgeInSeconds(31536000)
-                        )
                         // Chống Clickjacking (không cho phép trang web bị nhúng vào iframe)
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny)
                         // Chống XSS (Cross-Site Scripting) cơ bản
@@ -60,7 +48,7 @@ public class SecurityConfig {
                         )
                 )
 
-                // Cấu hình quyền truy cập (Như cũ)
+                // Cấu hình quyền truy cập
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/products**", "/api/products/**").permitAll()
                         .requestMatchers("/api/categories/**").permitAll()
@@ -88,7 +76,6 @@ public class SecurityConfig {
         // Cho phép gửi credentials (cookie, auth headers)
         configuration.setAllowCredentials(true);
 
-
         // Cache pre-flight request trong 1 giờ (3600s) để giảm tải cho server
         configuration.setMaxAge(3600L);
 
@@ -99,7 +86,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // BCrypt là thuật toán băm mật khẩu mạnh và phổ biến nhất hiện nay
         return new BCryptPasswordEncoder();
     }
 }
