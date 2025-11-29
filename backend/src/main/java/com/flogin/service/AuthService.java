@@ -16,6 +16,10 @@ public class AuthService {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    public AuthService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
     public LoginResponse authenticate(LoginRequest loginRequest) {
         Optional<UserEntity> userOptional = userRepository.findByUsername(loginRequest.getUsername());
 
@@ -31,14 +35,14 @@ public class AuthService {
 
         return new LoginResponse(true, "Đăng nhập thành công");
     }
-
-    public LoginResponse authenticatetest(LoginRequest loginRequest) {
-        if(loginRequest.getUsername().equals("testuser") && loginRequest.getPassword().equals("Test123"))
-        {
-            return new LoginResponse(true, "Dang nhap thanh cong");
-        }
-        else{
-            return new LoginResponse(false, "Username/password khong dung");
-        }
+//
+//    public LoginResponse authenticatetest(LoginRequest loginRequest) {
+//        if(loginRequest.getUsername().equals("testuser") && loginRequest.getPassword().equals("Test123"))
+//        {
+//            return new LoginResponse(true, "Dang nhap thanh cong");
+//        }
+//        else{
+//            return new LoginResponse(false, "Username/password khong dung");
+//        }
+//}
     }
-}

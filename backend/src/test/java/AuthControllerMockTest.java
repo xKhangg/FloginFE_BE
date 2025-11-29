@@ -57,7 +57,7 @@ public class AuthControllerMockTest {
     @Test
     @DisplayName("Mock: Controller voi mocked service Failure because of empty password")
     void testLoginEmptyPassWordWithMockedService() throws Exception {
-        LoginResponse MockResponse = new LoginResponse();
+        LoginResponse MockResponse = new LoginResponse(false,"");
         when(authService.authenticate(any())).thenReturn(MockResponse);
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -70,7 +70,7 @@ public class AuthControllerMockTest {
     @Test
     @DisplayName("Mock: Controller voi mocked service Failure because of invalid password")
     void testLoginInvalidPassWordWithMockedService() throws Exception {
-        LoginResponse MockResponse = new LoginResponse();
+        LoginResponse MockResponse = new LoginResponse(false,"");
         when(authService.authenticate(any())).thenReturn(MockResponse);
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -83,7 +83,7 @@ public class AuthControllerMockTest {
     @Test
     @DisplayName("Mock: Controller voi mocked service Failure because Password has space")
     void testLoginPasswordhasSpaceWordWithMockedService() throws Exception {
-        LoginResponse MockResponse = new LoginResponse();
+        LoginResponse MockResponse = new LoginResponse(false,"");
         when(authService.authenticate(any())).thenReturn(MockResponse);
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -23,8 +23,8 @@ public class AuthController {
         {
             return ResponseEntity.ok(response);
         }
-        else if(response.getMessage()==null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        else if(response.getMessage().isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
         else{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);

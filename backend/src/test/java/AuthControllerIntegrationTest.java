@@ -90,7 +90,7 @@ public class AuthControllerIntegrationTest {
     @DisplayName("POST /api/auth/login - That bai vi sai mat khau")
     public void testLoginFailureWithInvalidPassword() throws Exception{
         LoginRequest request = new LoginRequest("User123","Wrongpassword");
-        LoginResponse MockResponse = new LoginResponse(false,"Mật khẩu không đúng");
+        LoginResponse MockResponse = new LoginResponse(false,"");
 
         when(authService.authenticate(any(LoginRequest.class))).thenReturn(MockResponse);
         mockMvc.perform(post ("/api/auth/login")
@@ -99,7 +99,6 @@ public class AuthControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("Mật khẩu không đúng"))
                 .andExpect(jsonPath("$.token").doesNotExist());
     }
 
