@@ -1,15 +1,6 @@
-// --- BẮT ĐẦU PHẦN MOCK API ---
-// (Bạn có thể xóa phần Mock này hoặc giữ lại để tham khảo, code dưới đây là phần API thật)
-// ... (Phần code Mock giữ nguyên hoặc xóa tùy bạn) ...
-// --- HẾT PHẦN MOCK API ---
 
-// ==================================================
-// --- PHẦN API THẬT (ĐÃ SỬA) ---
-// ==================================================
 import axios from 'axios';
-
 const API_BASE_URL = 'http://localhost:8080/api';
-
 const apiClient = axios.create({
     baseURL: API_BASE_URL
 });

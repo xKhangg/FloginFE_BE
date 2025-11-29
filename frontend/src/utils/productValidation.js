@@ -1,12 +1,4 @@
-/**
- * Validate Product Object
- * * Rules:
- * - Product Name: 3-100 ký tự, không được rỗng [cite: 113]
- * - Price: > 0, <= 999,999,999 [cite: 114, 301]
- * - Quantity: >= 0, <= 99,999 [cite: 116]
- * - Description: <= 500 ký tự [cite: 117]
- * - Category: Phải được chọn (không rỗng) [cite: 118]
- */
+
 export const validateProduct = (product) => {
   const errors = {};
   const { name, price, quantity, description, category } = product;

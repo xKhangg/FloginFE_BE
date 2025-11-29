@@ -9,7 +9,6 @@ import { login } from '../services/authService'; // Kiểm tra đường dẫn n
 
 // 2. MOCK SERVICE
 jest.mock('../services/authService');
-
 // 3. MOCK ROUTER (Để xử lý useNavigate)
 const mockedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -43,7 +42,6 @@ describe('Login - Mock Tests (Câu 4.1)', () => {
 
         // Assert: Kiểm tra kết quả
         await waitFor(() => {
-            // Kiểm tra hàm login đã được gọi đúng tham số chưa
             expect(login).toHaveBeenCalledWith('admin', 'password123');
         });
 
