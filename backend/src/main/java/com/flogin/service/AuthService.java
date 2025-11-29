@@ -20,6 +20,10 @@ public class AuthService {
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
     public LoginResponse authenticate(LoginRequest loginRequest) {
         Optional<UserEntity> userOptional = userRepository.findByUsername(loginRequest.getUsername());
 
@@ -29,7 +33,7 @@ public class AuthService {
 
         UserEntity user = userOptional.get();
 
-        if (!user.getPassword().equals(loginRequest.getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             return new LoginResponse(false, "Username/password không đúng");
         }
 

@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -17,12 +19,16 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Login Service Unit Tests")
 public class AuthServiceUnitTest {
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @Mock
     private UserRepository userRepository;
     private AuthService authService;
     @BeforeEach
     void setUp() {
-        authService = new AuthService(userRepository);
+        authService = new AuthService(userRepository, passwordEncoder);
     }
 
   @Test
@@ -31,8 +37,9 @@ public class AuthServiceUnitTest {
       LoginRequest request = new LoginRequest("testuser","Test123");
       UserEntity user = new UserEntity();
       user.setUsername("testuser");
-      user.setPassword("Test123");
+      user.setPassword("$2a$12$hepMydkvTOZmCIq17X7WtOzvW8lgXRZEbapc6.SrSqDUa8eiYYYfu");
       when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+      when(passwordEncoder.matches("Test123", user.getPassword())).thenReturn(true);
       LoginResponse response= authService.authenticate(request);
       assertTrue(response.isSuccess());
       assertEquals("Đăng nhập thành công",response.getMessage());
@@ -43,7 +50,7 @@ public class AuthServiceUnitTest {
         LoginRequest request = new LoginRequest("wronguser","Pass123");
         UserEntity user = new UserEntity();
         user.setUsername("wronguser");
-        user.setPassword("Pass123");
+        user.setPassword("$2a$12$hepMydkvTOZmCIq17X7WtOzvW8lgXRZEbapc6.SrSqDUa8eiYYYfu");
         when(userRepository.findByUsername("wronguser")).thenReturn(Optional.empty());
         LoginResponse response= authService.authenticate(request);
         assertFalse(response.isSuccess());
@@ -55,8 +62,9 @@ public class AuthServiceUnitTest {
         LoginRequest request = new LoginRequest("testuser","");
         UserEntity user = new UserEntity();
         user.setUsername("testuser");
-        user.setPassword("test123");
+        user.setPassword("$2a$12$hepMydkvTOZmCIq17X7WtOzvW8lgXRZEbapc6.SrSqDUa8eiYYYfu");
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("", user.getPassword())).thenReturn(false);
         LoginResponse response= authService.authenticate(request);
         assertFalse(response.isSuccess());
         assertEquals("Username/password không đúng",response.getMessage());
@@ -68,8 +76,9 @@ public class AuthServiceUnitTest {
         LoginRequest request = new LoginRequest("testuser","test");
         UserEntity user = new UserEntity();
         user.setUsername("testuser");
-        user.setPassword("test123");
+        user.setPassword("$2a$12$hepMydkvTOZmCIq17X7WtOzvW8lgXRZEbapc6.SrSqDUa8eiYYYfu");
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("test", user.getPassword())).thenReturn(false);
         LoginResponse response= authService.authenticate(request);
         assertFalse(response.isSuccess());
         assertEquals("Username/password không đúng",response.getMessage());
@@ -81,8 +90,9 @@ public class AuthServiceUnitTest {
         LoginRequest request = new LoginRequest("testuser","test 789");
         UserEntity user = new UserEntity();
         user.setUsername("testuser");
-        user.setPassword("test123");
+        user.setPassword("$2a$12$hepMydkvTOZmCIq17X7WtOzvW8lgXRZEbapc6.SrSqDUa8eiYYYfu");
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("test 789", user.getPassword())).thenReturn(false);
         LoginResponse response= authService.authenticate(request);
         assertFalse(response.isSuccess());
         assertEquals("Username/password không đúng",response.getMessage());
