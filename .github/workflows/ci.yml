@@ -92,9 +92,9 @@ jobs:
       - name: Cypress Run (Product Spec Only)
         uses: cypress-io/github-action@v6
         with:
-          working-directory: frontend
+          working-directory: frontend/src
           wait-on: 'http://localhost:3000, http://localhost:8080/api/products?page=0'
-          wait-on-timeout: 300
+          wait-on-timeout: 120
           browser: chrome
           # Chỉ chạy các file test E2E có tên chứa chữ "product"
           spec: cypress/e2e/*product*.cy.js
