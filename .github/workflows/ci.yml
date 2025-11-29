@@ -83,7 +83,9 @@ jobs:
       - name: Start Frontend Server
         run: |
           cd frontend
-          npm run dev & 
+          npm start &
+        env:
+          BROWSER: none
 
       # --- 5. CHẠY E2E TESTS (CHỈ PRODUCT) ---
       - name: Cypress Run (Product Spec Only)
@@ -94,7 +96,7 @@ jobs:
           wait-on-timeout: 120
           browser: chrome
           # Chỉ chạy các file test E2E có tên chứa chữ "product"
-          spec: cypress/e2e/**/*product*.cy.js
+          spec: cypress/e2e/*product*.cy.js
         env:
           CYPRESS_chromeWebSecurity: false
 
