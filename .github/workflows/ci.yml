@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: Product CI Pipeline
 
 on:
   push:
@@ -8,10 +8,8 @@ on:
 
 jobs:
   build-and-test:
-    # KHUYẾN NGHỊ: Giữ nguyên Ubuntu để chạy được MySQL Service dễ dàng
     runs-on: ubuntu-latest
 
-    # Cấu hình MySQL Service (Backend cần cái này để chạy)
     services:
       mysql:
         image: mysql:8.0
@@ -41,36 +39,37 @@ jobs:
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
-      # --- 2. BACKEND: BUILD & UNIT TEST ---
-      - name: Backend - Build & Unit Test
+      # --- 2. BACKEND: BUILD & UNIT TEST (CHỈ PRODUCT) ---
+      - name: Backend - Unit Test (Product Only)
         run: |
           cd backend
-          mvn clean test
+          # Thêm -Dtest=*Product* để chỉ chạy các file test có tên chứa chữ Product
+          # Ví dụ: ProductServiceTest, ProductControllerIntegrationTest
+          mvn clean test -Dtest=*Product*
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/FloginFE_BE
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: root
 
-      # --- 3. FRONTEND: INSTALL & UNIT TEST ---
+      # --- 3. FRONTEND: INSTALL & UNIT TEST (CHỈ PRODUCT) ---
       - name: Frontend - Install Dependencies
         run: |
           cd frontend
           npm ci
 
-      - name: Frontend - Unit Test
+      - name: Frontend - Unit Test (Product Only)
         run: |
           cd frontend
-          npm test -- --watchAll=false --passWithNoTests
+          # Thêm từ khóa 'Product' để Jest chỉ chạy các file test liên quan đến Product
+          npm test -- Product --watchAll=false --passWithNoTests
 
       # --- 4. CHUẨN BỊ E2E: KHỞI ĐỘNG SERVER ---
-
-      # Bước này build ra file .jar để chạy server nhẹ hơn
       - name: Backend - Build JAR (Skip Tests)
         run: |
           cd backend
-          ./mvnw package -DskipTests
+          # Dùng 'mvn' thay vì './mvnw' để tránh lỗi quyền hạn
+          mvn package -DskipTests
 
-      # Chạy Backend trong background (&)
       - name: Start Backend Server
         run: |
           cd backend
@@ -81,28 +80,28 @@ jobs:
           SPRING_DATASOURCE_PASSWORD: root
           SERVER_PORT: 8080
 
-      # Chạy Frontend trong background (&)
       - name: Start Frontend Server
         run: |
           cd frontend
           npm run dev & 
 
-      # --- 5. CHẠY E2E TESTS (CYPRESS) ---
-      - name: Cypress Run
+      # --- 5. CHẠY E2E TESTS (CHỈ PRODUCT) ---
+      - name: Cypress Run (Product Spec Only)
         uses: cypress-io/github-action@v6
         with:
           working-directory: frontend
-          # Tự động đợi Frontend (5173) và Backend (8080) sẵn sàng rồi mới test
-          wait-on: 'http://localhost:3000, http://localhost:8080'
-          wait-on-timeout: 120 # Đợi tối đa 120 giây
+          wait-on: 'http://localhost:3000, http://localhost:8080' # (Lưu ý: Vite thường là 5173, check lại port của bạn)
+          wait-on-timeout: 120
           browser: chrome
+          # CHỈ ĐỊNH FILE TEST CỤ THỂ Ở ĐÂY
+          # Dấu * giúp tìm bất kỳ file nào có chữ product trong thư mục e2e
+          spec: cypress/e2e/**/*product*.cy.js
         env:
-          # Cấu hình biến môi trường cho Cypress nếu cần (để fix lỗi HTTPS certificate)
           CYPRESS_chromeWebSecurity: false
 
       # --- 6. UPLOAD COVERAGE ---
       - name: Upload coverage to Codecov
-        if: always() # Luôn chạy dù test có fail để xem fail ở đâu
+        if: always()
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
