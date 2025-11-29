@@ -7,12 +7,12 @@ class ProductPage {
         tableRows: () => cy.get('table tbody tr'),
         nextPageBtn: () => cy.contains('button', 'Sau'),
         prevPageBtn: () => cy.contains('button', 'Trước'),
-        pageInfo: () => cy.get('span').contains('Trang'), // Tìm span có chữ "Trang"
+        pageInfo: () => cy.get('span').contains('Trang'),
 
         nameInput: () => cy.get('input[name="name"]').filter(':visible'),
         priceInput: () => cy.get('input[name="price"]').filter(':visible'),
         quantityInput: () => cy.get('input[name="quantity"]').filter(':visible'),
-        categoryInput: () => cy.get('select[name="categoryId"]').filter(':visible'), // Select trong Form
+        categoryInput: () => cy.get('select[name="categoryId"]').filter(':visible'),
         descriptionInput: () => cy.get('textarea[name="description"]').filter(':visible'),
 
         saveBtn: () => cy.contains('button', 'Lưu'),

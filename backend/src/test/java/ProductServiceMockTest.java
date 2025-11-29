@@ -70,16 +70,8 @@ public class ProductServiceMockTest {
         mockProductDTO.setDescription("Book1 for testing");
         mockProductDTO.setCategoryId(1);
 
-        // --- Setup cho Phân trang ---
-
-        // 1. Tạo một đối tượng Pageable (trang 0, 10 sản phẩm)
         pageable = PageRequest.of(0, 10);
-
-        // 2. Tạo một danh sách Entity giả (nội dung của trang)
-        productList = List.of(mockProductEntity); // Bạn có thể thêm nhiều product vào đây
-
-        // 3. Tạo một đối tượng Page<ProductEntity> giả
-        // (Nó cần danh sách, đối tượng Pageable, và tổng số phần tử)
+        productList = List.of(mockProductEntity);
         mockProductEntityPage = new PageImpl<>(productList, pageable, productList.size());
     }
 

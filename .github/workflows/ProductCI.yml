@@ -39,8 +39,8 @@ jobs:
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
-      # --- 2. BACKEND: BUILD & UNIT TEST (CHỈ PRODUCT) ---
-      - name: Backend - Unit Test (Product Only)
+      # --- 2. BACKEND: BUILD & TEST ---
+      - name: Backend - Test (Product)
         run: |
           cd backend
           # Thêm -Dtest=*Product* để chỉ chạy các file test có tên chứa chữ Product
@@ -50,14 +50,14 @@ jobs:
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: root
 
-      # --- 3. FRONTEND: INSTALL & UNIT TEST (CHỈ PRODUCT) ---
+      # --- 3. FRONTEND: INSTALL & TEST ---
       - name: Frontend - Install Dependencies
         run: |
           cd frontend
           npm ci
           npm run build
 
-      - name: Frontend - Unit Test (Product Only)
+      - name: Frontend - Test (Product)
         # THÊM DÒNG NÀY: Cho phép chạy tiếp dù test frontend bị fail
         continue-on-error: true
         run: |
@@ -66,7 +66,7 @@ jobs:
           npm test -- Product --watchAll=false --passWithNoTests
 
       # --- 4. CHUẨN BỊ E2E: KHỞI ĐỘNG SERVER ---
-      - name: Backend - Build JAR (Skip Tests)
+      - name: Backend - Build JAR
         run: |
           cd backend
           mvn package -DskipTests
@@ -93,11 +93,12 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           working-directory: frontend
-          wait-on: 'http://localhost:3000, http://localhost:8080'
-          wait-on-timeout: 300
+          config-file: src/cypress.config.js
+          wait-on: 'http://localhost:3000, http://localhost:8080/api/products?page=0'
+          wait-on-timeout: 120
           browser: chrome
           # Chỉ chạy các file test E2E có tên chứa chữ "product"
-          spec: cypress/e2e/*product*.cy.js
+          spec: src/cypress/e2e/*product*.cy.js
         env:
           CYPRESS_chromeWebSecurity: false
 

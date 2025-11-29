@@ -70,16 +70,8 @@ public class ProductServiceUnitTest {
         productDTO.setDescription("Book1 for testing");
         productDTO.setCategoryId(categoryId);
 
-        // --- Setup cho Phân trang ---
-
-        // 1. Tạo một đối tượng Pageable (trang 0, 10 sản phẩm)
         pageable = PageRequest.of(0, 10);
-
-        // 2. Tạo một danh sách Entity giả (nội dung của trang)
-        List<ProductEntity> productList = List.of(productEntity); // Bạn có thể thêm nhiều product vào đây
-
-        // 3. Tạo một đối tượng Page<ProductEntity> giả
-        // (Nó cần danh sách, đối tượng Pageable, và tổng số phần tử)
+        List<ProductEntity> productList = List.of(productEntity);
         productEntityPage = new PageImpl<>(productList, pageable, productList.size());
     }
 
@@ -288,19 +280,16 @@ public class ProductServiceUnitTest {
     @DisplayName("Lấy sản phẩm thất bại: ID không tồn tại")
     void testGetProduct_NotFound() {
         // ARRANGE
-        // Giả lập tìm trong DB nhưng trả về Rỗng (Empty)
         when(productRepository.findById(eq(999)))
                 .thenReturn(Optional.empty());
 
         // ACT & ASSERT
-        // Kiểm tra xem Service có ném ra lỗi EntityNotFoundException không
         assertThrows(EntityNotFoundException.class, () -> {
             productService.getProductByID(999);
         });
 
         // VERIFY
         verify(productRepository, times(1)).findById(eq(999));
-        // Đảm bảo Mapper KHÔNG BAO GIỜ được gọi (vì lỗi ném ra trước đó)
         verifyNoInteractions(productMapper);
     }
 
