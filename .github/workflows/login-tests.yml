@@ -56,7 +56,7 @@ jobs:
         continue-on-error: true
         run: |
           cd frontend
-          npm test -- Login --watchAll=false --passWithNoTests
+          npm test -- src/tests/Login --watchAll=false --passWithNoTests
 
       - name: Backend - Build JAR (Skip Tests)
         run: |
