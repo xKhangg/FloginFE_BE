@@ -32,6 +32,7 @@ public class AuthControllerMockTest {
     @DisplayName("Mock: Controller voi mocked service success")
     void testLoginWithMockedService() throws Exception {
         LoginResponse MockResponse = new LoginResponse(true,"Success","mock-token");
+        //ARRANGE
         when(authService.authenticate(any())).thenReturn(MockResponse);
         mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -39,12 +40,14 @@ public class AuthControllerMockTest {
                         .with(csrf()))
                 .andExpect(status().isOk());
 
+        //VERIFY
         verify(authService,times(1)).authenticate(any());
     }
     @Test
     @DisplayName("Mock: Controller voi mocked service Failure")
     void testLoginFailureWithMockedService() throws Exception {
         LoginResponse MockResponse = new LoginResponse(false,"Failure","mock-token");
+        //ARRANGE
         when(authService.authenticate(any())).thenReturn(MockResponse);
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -52,12 +55,14 @@ public class AuthControllerMockTest {
                         .with(csrf()))
                 .andExpect(status().isUnauthorized());
 
+        //VERIFY
         verify(authService,times(1)).authenticate(any());
     }
     @Test
     @DisplayName("Mock: Controller voi mocked service Failure because of empty password")
     void testLoginEmptyPassWordWithMockedService() throws Exception {
         LoginResponse MockResponse = new LoginResponse(false,"");
+        //ARRANGE
         when(authService.authenticate(any())).thenReturn(MockResponse);
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -65,12 +70,14 @@ public class AuthControllerMockTest {
                         .with(csrf()))
                 .andExpect(status().isBadRequest());
 
+        //VERIFY
         verify(authService,times(1)).authenticate(any());
     }
     @Test
     @DisplayName("Mock: Controller voi mocked service Failure because of invalid password")
     void testLoginInvalidPassWordWithMockedService() throws Exception {
         LoginResponse MockResponse = new LoginResponse(false,"");
+        //ARRANGE
         when(authService.authenticate(any())).thenReturn(MockResponse);
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -78,12 +85,14 @@ public class AuthControllerMockTest {
                         .with(csrf()))
                 .andExpect(status().isBadRequest());
 
+        //VERIFY
         verify(authService,times(1)).authenticate(any());
     }
     @Test
     @DisplayName("Mock: Controller voi mocked service Failure because Password has space")
     void testLoginPasswordhasSpaceWordWithMockedService() throws Exception {
         LoginResponse MockResponse = new LoginResponse(false,"");
+        //ARRANGE
         when(authService.authenticate(any())).thenReturn(MockResponse);
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -91,6 +100,7 @@ public class AuthControllerMockTest {
                         .with(csrf()))
                 .andExpect(status().isBadRequest());
 
+        //VERIFY
         verify(authService,times(1)).authenticate(any());
     }
 }
