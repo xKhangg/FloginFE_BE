@@ -204,13 +204,10 @@ npx cypress run
 ```
 
 #### Chạy Performance Test (JMeter)
-Mở Apache JMeter.
-
-Load file kịch bản test .jmx (nếu có trong thư mục backend/src/tests/performance).
-
-Cấu hình số lượng Users (Threads) mong muốn (100, 500, 1000).
-
-Nhấn Start để chạy Load Test hoặc Stress Test.
+1. Mở Apache JMeter.
+2. Load file kịch bản test .jmx (nếu có trong thư mục backend/src/tests/performance).
+3. Cấu hình số lượng Users (Threads) mong muốn (100, 500, 1000).
+4. Nhấn Start để chạy Load Test hoặc Stress Test.
 
 ## 📁 Cấu trúc dự án
 
