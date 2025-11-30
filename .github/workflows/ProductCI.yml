@@ -96,7 +96,7 @@ jobs:
           wait-on: 'http://localhost:3000, http://localhost:8080/api/products?page=0'
           wait-on-timeout: 120
           browser: chrome
-          spec: src/cypress/e2e/*product*.cy.js
+          spec: src/cypress/e2e/product.e2e.spec.cy.js
         env:
           CYPRESS_chromeWebSecurity: false
 
