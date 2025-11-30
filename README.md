@@ -218,9 +218,9 @@ FloginFE_BE/
 │       ├── login-tests.yml       # Login Pipeline
 │       └── ProductCI.yml         # Product Pipeline
 ├── frontend/                 # React Application
+│   ├── cypress/              # POM, Cypress E2E Test
 │   ├── src/
 │   │   ├── components/       # Login, Product components
-│   │   ├── cypress/          # POM, Cypress E2E Test
 │   │   ├── services/         # API services
 │   │   ├── utils/            # Validation utilities
 │   │   └── tests/            # Test files
