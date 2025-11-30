@@ -203,7 +203,7 @@ cd frontend/src
 npx cypress run
 ```
 
-#### Chạy Performance Test (JMeter)
+### Performance Test (JMeter)
 1. Mở Apache JMeter.
 2. Load file kịch bản test .jmx (nếu có trong thư mục backend/src/tests/performance).
 3. Cấu hình số lượng Users (Threads) mong muốn (100, 500, 1000).
