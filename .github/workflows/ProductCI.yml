@@ -92,11 +92,11 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           working-directory: frontend
-          config-file: src/cypress.config.js
+          config-file: cypress.config.js
           wait-on: 'http://localhost:3000, http://localhost:8080/api/products?page=0'
           wait-on-timeout: 120
           browser: chrome
-          spec: ./cypress/e2e/*product*.cy.js
+          spec: src/cypress/e2e/*product*.cy.js
         env:
           CYPRESS_chromeWebSecurity: false
 
