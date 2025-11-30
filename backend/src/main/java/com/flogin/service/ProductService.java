@@ -13,8 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class ProductService {
 
@@ -28,8 +26,6 @@ public class ProductService {
         this.productMapper = productMapper;
     }
 
-    //Phải kiểm tra tham số truyền vào có null không.
-    //Đảm bảo toàn vẹn dữ liệu (Thành công hết, nếu sai 1 bước thì rollback)
     @Transactional
     public ProductDTO createProduct(ProductDTO productDTO){
 
@@ -37,7 +33,6 @@ public class ProductService {
             throw new IllegalArgumentException("Tham số truyền vào productDTO không được null");
         }
 
-        //Tìm không thấy => ném Exception
         CategoryEntity categoryEntity = categoryRepository.findById(productDTO.getCategoryId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy Category với ID: " + productDTO.getCategoryId()
@@ -55,12 +50,6 @@ public class ProductService {
         return productMapper.toDTO(savedProductEntity);
     }
 
-    /*
-    readOnly = true	Tối ưu hiệu năng. Báo Hibernate bỏ qua "Dirty Checking".
-    @Transactional	Quản lý Session. Giữ Session mở trong suốt hàm Service để tránh lỗi LazyInitializationException
-    (ngay cả khi bạn đã dùng JOIN FETCH, đây vẫn là một "lưới an toàn" tốt).
-     */
-    //Phân trang
     public Page<ProductDTO> getAllProductsPaginated(String name, Integer categoryId, int page, int pageSize){
 
         // 1. Tạo đối tượng Pageable (chỉ định trang nào, bao nhiêu phần tử)
@@ -85,11 +74,6 @@ public class ProductService {
         return productMapper.toDTO(productEntity);
     }
 
-    /*
-    GIỮ các annotation (@NotNull, @NotBlank...) trên các trường (field) của ProductDTO.
-
-    GIỮ các kiểm tra if (var == null) thủ công bên trong các phương thức của ProductService.
-     */
     @Transactional
     public ProductDTO updateProduct(
             Integer productId, ProductDTO productDTO
@@ -101,7 +85,6 @@ public class ProductService {
             throw new IllegalArgumentException("Tham số truyền vào productDTO không được null");
         }
 
-        //Tìm không thấy => ném Exception
         CategoryEntity categoryEntity = categoryRepository.findById(productDTO.getCategoryId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Không tìm thấy Category với ID: " + productDTO.getCategoryId()

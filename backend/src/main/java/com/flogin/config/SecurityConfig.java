@@ -23,18 +23,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // ----------------------------------------------------------------
-                // 1. CORS Configuration (Cấu hình CORS)
-                // ----------------------------------------------------------------
-                // Quan trọng: Phải kích hoạt nó trong filter chain để nó dùng bean bên dưới
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // Tắt CSRF (cho API stateless)
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // ----------------------------------------------------------------
-                // 2. Security Headers
-                // ----------------------------------------------------------------
                 .headers(headers -> headers
                         // Chống Clickjacking (không cho phép trang web bị nhúng vào iframe)
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny)
@@ -48,7 +40,6 @@ public class SecurityConfig {
                         )
                 )
 
-                // Cấu hình quyền truy cập
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/products**", "/api/products/**").permitAll()
                         .requestMatchers("/api/categories/**").permitAll()
@@ -64,19 +55,14 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Chỉ cho phép các origin cụ thể (frontend)
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5173"));
 
-        // Các method được phép
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
-        // Các header được phép
         configuration.setAllowedHeaders(List.of("*"));
 
-        // Cho phép gửi credentials (cookie, auth headers)
         configuration.setAllowCredentials(true);
 
-        // Cache pre-flight request trong 1 giờ (3600s) để giảm tải cho server
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

@@ -3,31 +3,25 @@ package com.flogin.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
-//Thực thể
 @Entity
-//Bảng
 @Table(name = "products")
 public class ProductEntity {
 
     @Id
-    //Tự động gán Id (tự tăng)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @NotBlank(message = "Tên sản phẩm không được để trống")
-    //@Size kiểm tra độ dài chuỗi
     @Size(min = 3, max = 100, message = "Tên sản phẩm phải từ 3 đến 100 ký tự")
-    //Cột(không được null, mỗi sản phẩm phải có tên khác nhau)
     @Column(nullable = false, unique = true)
     private String name;
 
     @Positive(message = "Giá sản phẩm phải lớn hơn 0")
     @Max(value = 999_999_999, message = "Giá sản phẩm tối đa 999,999,999")
-    // 'nullable = false' bắt buộc sản phẩm phải có giá
     @Column(nullable = false)
     private Double price;
 
-    //@Min @Max kiểm tra giá trị của số
+
     @Min(value = 0, message = "Số lượng sản phẩm không được âm")
     @Max(value = 99_999, message = "Số lượng sản phẩm tối đa 99,999")
     @Column(nullable = false)
@@ -35,19 +29,11 @@ public class ProductEntity {
 
     @Size(max = 500, message = "Mô tả sản phẩm tối đa 500 ký tự")
     @Column
-    @Lob // Dùng cho các trường văn bản dài
+    @Lob
     private String description;
 
     @NotNull(message = "Category không được để trống")
-    // Quan hệ: Nhiều sản phẩm thuộc về 1 loại
-    @ManyToOne(fetch = FetchType.LAZY) // LAZY: Chỉ load category khi thật sự cần
-    /*
-    @JoinColumn là một annotation của JPA dùng để chỉ định cột khóa ngoại (foreign key) trong bảng database.
-    Nó được dùng để kết nối một mối quan hệ (như @ManyToOne hoặc @OneToOne) với một cột cụ thể trong bảng.
-    @JoinColumn(...) Báo cho JPA: "Hãy dùng một cột trong bảng products để quản lý mối quan hệ này."
-    name = "category_id": Chỉ định tên chính xác của cột đó trong bảng products là category_id.
-    Cột này sẽ chứa giá trị ID (khóa chính) của Category mà sản phẩm này thuộc về.
-    */
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity category;
 

@@ -7,7 +7,6 @@ public class ProductDTO {
     private Integer id;
 
     @NotBlank(message = "Tên sản phẩm không được để trống")
-    //@Size kiểm tra độ dài chuỗi
     @Size(min = 3, max = 100, message = "Tên sản phẩm phải từ 3 đến 100 ký tự")
     private String name;
 
@@ -15,7 +14,6 @@ public class ProductDTO {
     @Max(value = 999_999_999, message = "Giá sản phẩm tối đa 999,999,999")
     private Double price;
 
-    //@Min @Max kiểm tra giá trị của số
     @Min(value = 0, message = "Số lượng sản phẩm không được âm")
     @Max(value = 99_999, message = "Số lượng sản phẩm tối đa 99,999")
     private Integer quantity;

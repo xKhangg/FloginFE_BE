@@ -67,7 +67,7 @@ cd FloginFE_BE
 Tạo database MySQL:
 
 ```sql
-CREATE DATABASE flogin_db;
+CREATE DATABASE FloginFE_BE;
 ```
 
 Cập nhật thông tin kết nối database trong `backend/src/main/resources/application.properties`:
@@ -143,6 +143,12 @@ mvn test -Dtest=AuthControllerIntegrationTest
 
 # Product Controller Integration Tests
 mvn test -Dtest=ProductControllerIntegrationTest
+
+# Login Service Mock Tests
+mvn test -Dtest=AuthServiceMockTest
+
+# Product Service Mock Tests
+mvn test -Dtest=ProductServiceMockTest
 ```
 
 ### Frontend Tests
@@ -164,6 +170,21 @@ npm test -- --coverage
 # Login Validation Tests
 npm test -- LoginValidation.test.js
 
+# Login Integration Tests
+npm test -- Login.integration.test.js
+
+# Login Mock Tests
+npm test -- Login.mock.test.js
+
+# Product Form Tests
+npm test -- ProductForm.test.js
+
+# Product Management Integration Tests
+npm test -- ProductManagement.integration.test.js
+
+# Product Management Mock Tests
+npm test -- ProductManagement.mock.test.js
+
 # Product Validation Tests
 npm test -- productValidation.test.js
 ```
@@ -182,54 +203,47 @@ cd frontend/src
 npx cypress run
 ```
 
+#### Chạy Performance Test (JMeter)
+Mở Apache JMeter.
+
+Load file kịch bản test .jmx (nếu có trong thư mục backend/src/tests/performance).
+
+Cấu hình số lượng Users (Threads) mong muốn (100, 500, 1000).
+
+Nhấn Start để chạy Load Test hoặc Stress Test.
+
 ## 📁 Cấu trúc dự án
 
 ```
 FloginFE_BE/
-├── backend/                    # Spring Boot Backend
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/flogin/
-│   │   │   │   ├── config/           # Security & App Configuration
-│   │   │   │   ├── controller/       # REST Controllers
-│   │   │   │   ├── dto/              # Data Transfer Objects
-│   │   │   │   ├── entity/           # JPA Entities
-│   │   │   │   ├── repository/       # JPA Repositories
-│   │   │   │   └── service/          # Business Logic
-│   │   │   └── resources/
-│   │   │       ├── application.properties
-│   │   │       └── data.sql          # Initial data
-│   │   └── test/
-│   │       └── java/
-│   │           ├── AuthServiceUnitTest.java
-│   │           ├── AuthControllerIntegrationTest.java
-│   │           ├── ProductServiceUnitTest.java
-│   │           └── ProductControllerIntegrationTest.java
-│   └── pom.xml
-│
-├── frontend/                   # React Frontend
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Login/            # Login component
-│   │   │   └── ProductManagement/ # Product CRUD component
-│   │   ├── cypress/              # Cypress E2E tests
-│   │   │   ├── e2e/
-│   │   │   └── pages/            # Page Object Models
-│   │   ├── tests/                # Jest unit tests
-│   │   │   ├── LoginValidation.test.js
-│   │   │   └── productValidation.test.js
-│   │   ├── App.js
-│   │   └── index.js
-│   ├── cypress.config.js
-│   └── package.json
-│
 ├── .github/
 │   └── workflows/
-│       ├── ProductCI.yml         # Product CI/CD pipeline
-│       └── login-tests.yml       # Login tests pipeline
-│
-└── README.md
+│       ├── login-tests.yml       # Login Pipeline
+│       └── ProductCI.yml         # Product Pipeline
+├── frontend/                 # React Application
+│   ├── src/
+│   │   ├── components/       # Login, Product components
+│   │   ├── cypress/          # POM, Cypress E2E Test
+│   │   ├── services/         # API services
+│   │   ├── utils/            # Validation utilities
+│   │   └── tests/            # Test files
+│   └── package.json
+└── backend/                          # Spring Boot API
+    ├── src/
+    │   ├── main/
+    │   │   ├── java/com/flogin/
+    │   │   │   ├── config/           # SecurityConfig
+    │   │   │   ├── controller/       # AuthController, ProductController
+    │   │   │   ├── service/          # Business logic
+    │   │   │   ├── dto/              # Data Transfer Objects
+    │   │   │   ├── entity/           # Database entities
+    │   │   │   ├── repository/       # Data access
+    │   │   │   └── requests.http     # Test API
+    │   │   └── resources/            # Database and Server Configuration, Initial Data
+    │   └── test/
+    │       ├── performance/          # Performance Test 
+    │       └── java/                 # Test files
+    └── pom.xml
 ```
 
 ## 🔄 CI/CD
