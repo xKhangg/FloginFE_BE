@@ -273,4 +273,12 @@ Dự án này được phát triển cho mục đích học tập và nghiên c�
 
 ---
 
+## Bảng phân công
+| MSSV       | Họ và tên                        | Công việc                                                                      | Đóng góp |
+|:-----------|:---------------------------------|:-------------------------------------------------------------------------------|:---------|
+| 3123560041 | Vũ Hồng Vĩnh Khang (Nhóm trưởng) | Backend Product (Test, E2E, CI/CD, Performance, Security), Documentation       | 27%      |
+| 3123560042 | Nguyễn Văn Khanh                 | Viết báo cáo                                                                   | 27%      |
+| 3123560044 | Nguyễn Tuấn Kiệt                 | Backend Login (Test, E2E, CI/CD, Performance), Password Hashing, Documentation | 23%      |
+| 3123410097 | Hàn Gia Hào                      | Frontend Login/Product (Unit, TDD, Integration, Mock Test), Documentation      | 23%      |
+
 **Lưu ý**: Đảm bảo cấu hình đúng database connection và các environment variables trước khi chạy ứng dụng.
