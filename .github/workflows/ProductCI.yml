@@ -58,7 +58,6 @@ jobs:
           npm run build
 
       - name: Frontend - Test (Product)
-        # THÊM DÒNG NÀY: Cho phép chạy tiếp dù test frontend bị fail
         continue-on-error: true
         run: |
           cd frontend
@@ -97,7 +96,6 @@ jobs:
           wait-on: 'http://localhost:3000, http://localhost:8080/api/products?page=0'
           wait-on-timeout: 120
           browser: chrome
-          # Chỉ chạy các file test E2E có tên chứa chữ "product"
           spec: src/cypress/e2e/*product*.cy.js
         env:
           CYPRESS_chromeWebSecurity: false
