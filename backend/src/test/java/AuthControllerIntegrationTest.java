@@ -45,6 +45,7 @@ public class AuthControllerIntegrationTest {
         LoginRequest request = new LoginRequest("testuser","Test123");
         LoginResponse MockResponse = new LoginResponse(true,"Dang nhap thanh cong","token123",new UserDTO("testuser","testuser@example.com"));
 
+        //VERIFY
         when(authService.authenticate(any(LoginRequest.class))).thenReturn(MockResponse);
         mockMvc.perform(post ("/api/auth/login")
                         .with(csrf())
@@ -60,6 +61,7 @@ public class AuthControllerIntegrationTest {
         LoginRequest request = new LoginRequest("Wronguser","Test123");
         LoginResponse MockResponse = new LoginResponse(false,"Dang nhap that bai");
 
+        //VERIFY
         when(authService.authenticate(any(LoginRequest.class))).thenReturn(MockResponse);
         mockMvc.perform(post ("/api/auth/login")
                         .with(csrf())
@@ -76,6 +78,7 @@ public class AuthControllerIntegrationTest {
         LoginRequest request = new LoginRequest("InvalidUser","Test123");
         LoginResponse MockResponse = new LoginResponse(false,"Người dùng không tồn tại");
 
+        //VERIFY
         when(authService.authenticate(any(LoginRequest.class))).thenReturn(MockResponse);
         mockMvc.perform(post ("/api/auth/login")
                         .with(csrf())
@@ -92,6 +95,7 @@ public class AuthControllerIntegrationTest {
         LoginRequest request = new LoginRequest("User123","Wrongpassword");
         LoginResponse MockResponse = new LoginResponse(false,"");
 
+        //VERIFY
         when(authService.authenticate(any(LoginRequest.class))).thenReturn(MockResponse);
         mockMvc.perform(post ("/api/auth/login")
                         .with(csrf())

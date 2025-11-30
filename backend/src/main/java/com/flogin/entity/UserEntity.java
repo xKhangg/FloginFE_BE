@@ -11,18 +11,23 @@ import lombok.*;
 
 public class UserEntity {
     @Id
+    //Tự động gán Id (tự tăng)
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
     @Getter
     @Setter
+    //@Size kiểm tra độ dài chuỗi
     @Size(min = 3, max = 50, message = "Tên người dùng phải từ 3 đến 50 ký tự")
     @Pattern(regexp = "^[A-Za-z0-9._-]+$",message = "Tên người dùng chỉ chứa a-z,A-Z,0-9,-,.,_")
+    //Cột(không được null, mỗi username là duy nhất)
     @Column(unique=true,nullable=false)
     private String username;
     @Getter
     @Setter
+    //@Size kiểm tra độ dài chuỗi
     @Size(min = 6,max=100,message = "Mật khẩu phải từ 6 đến 100 ký tự")
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$", message = "Mật khẩu phải có chữ và số")
+    // 'nullable = false' bắt buộc tài khoản phải có password
     @Column(nullable=false)
     private String password;
 

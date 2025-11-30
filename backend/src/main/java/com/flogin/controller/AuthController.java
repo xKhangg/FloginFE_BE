@@ -15,6 +15,10 @@ public class AuthController {
 
     @Autowired
     private AuthService userService;
+
+    /*
+    @PostMapping("/login): Bạn đang định nghĩa một Biến đường dẫn (Path Variable). URL mà Spring Boot mong đợi sẽ là: /api/auth/login
+     */
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         LoginResponse response = userService.authenticate(loginRequest);

@@ -1,20 +1,17 @@
 import React from 'react';
-// Import hooks và components cần thiết từ react-router-dom
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 
 import Login from './components/Login/Login';
 import ProductManagement from './components/ProductManagement/ProductManagement';
 
-// Import file CSS Module mới cho App
 import styles from './App.module.css';
 
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Kiểm tra xem người dùng đã đăng nhập chưa (giả sử token được lưu)
-  // Logic này sẽ hoạt động sau khi chúng ta cập nhật file Login.jsx
+  // Kiểm tra xem người dùng đã đăng nhập chưa 
   const isLoggedIn = !!localStorage.getItem('userToken');
 
   // Hàm đăng xuất
@@ -36,7 +33,7 @@ function App() {
             HỆ THỐNG QUẢN LÝ SẢN PHẨM
           </div>
           <div className={styles.navActions}>
-            {/* 2. Nút "Đăng xuất" thay vì "Đăng nhập" */}
+            {/* 2. Nút "Đăng xuất"  */}
             <button onClick={handleLogout} className={styles.logoutButton}>
               Đăng xuất
             </button>

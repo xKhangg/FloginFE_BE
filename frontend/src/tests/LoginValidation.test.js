@@ -1,9 +1,5 @@
 import { validateUsername, validatePassword } from '../utils/loginValidation';
-
-
 describe('Login Validation Tests - validateUsername', () => {
-
-
   test('TC1: Username rỗng - nên trả về lỗi', () => {
     expect(validateUsername('')).toBe('Tên đăng nhập không được để trống');
     expect(validateUsername('   ')).toBe('Tên đăng nhập không được để trống');
@@ -14,7 +10,7 @@ describe('Login Validation Tests - validateUsername', () => {
   });
 
   test('TC3: Username quá dài - nên trả về lỗi', () => {
-    const longUsername = 'a'.repeat(51); // 51 ký tự
+    const longUsername = 'a'.repeat(51); 
 
     expect(validateUsername(longUsername)).toBe('Tên đăng nhập không được quá 50 ký tự');
   });

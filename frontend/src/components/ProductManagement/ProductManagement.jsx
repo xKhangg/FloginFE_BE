@@ -39,7 +39,6 @@ function ProductManagement() {
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     
-    // Không cần khai báo pageSize cố định ở đây nữa vì ta sẽ xử lý động bên dưới
 
     // --- STATE FORM & DIALOG ---
     const [formData, setFormData] = useState(emptyForm);
@@ -52,7 +51,7 @@ function ProductManagement() {
     const [currentProduct, setCurrentProduct] = useState(null);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-    // --- 1. TẢI DANH SÁCH CATEGORY (Chạy 1 lần khi mount) ---
+    // --- 1. TẢI DANH SÁCH CATEGORY  ---
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -65,21 +64,14 @@ function ProductManagement() {
         fetchCategories();
     }, []);
 
-    // --- 2. TẢI SẢN PHẨM (ĐÃ SỬA LOGIC TÌM KIẾM SERVER-SIDE) ---
+    // --- 2. TẢI SẢN PHẨM  ---
     const fetchProducts = async (page, catId, search) => {
         setIsLoading(true);
         setApiError(null);
         try {
             const idToSend = (catId === 'All' || catId === '') ? null : catId;
-
-            // --- LOGIC QUAN TRỌNG: ---
-            // Nếu có từ khóa tìm kiếm (search) -> Lấy size = 1000 để hiển thị TOÀN BỘ kết quả tìm được
-            // Nếu KHÔNG tìm kiếm -> Lấy size = 5 để phân trang bình thường
             const sizeToSend = search ? 1000 : 5;
-
-            // Gọi API với đủ 4 tham số: page, category, search, size
             const response = await getProducts(page, idToSend, search, sizeToSend);
-
             setProducts(response.data.content || []);
             setTotalPages(response.data.totalPages || 0);
 
@@ -94,7 +86,7 @@ function ProductManagement() {
     useEffect(() => {
         // Mỗi khi currentPage, selectedCategoryId HOẶC searchTerm thay đổi -> Gọi lại API
         fetchProducts(currentPage, selectedCategoryId, searchTerm);
-    }, [currentPage, selectedCategoryId, searchTerm]); // <--- Đã thêm searchTerm vào đây
+    }, [currentPage, selectedCategoryId, searchTerm]); 
 
     // --- XỬ LÝ THAY ĐỔI BỘ LỌC ---
     const handleCategoryFilterChange = (e) => {
@@ -105,7 +97,7 @@ function ProductManagement() {
     // --- XỬ LÝ TÌM KIẾM ---
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
-        setCurrentPage(0); // Reset về trang đầu khi bắt đầu gõ tìm kiếm
+        setCurrentPage(0); 
     };
 
     // --- XỬ LÝ FORM ---
@@ -340,7 +332,7 @@ function ProductManagement() {
                         {isLoading ? (
                             <tr><td colSpan={6} className={styles.tableCellLoading}>Đang tải dữ liệu...</td></tr>
                         ) : (
-                            // --- ĐÃ SỬA: XÓA FILTER Ở ĐÂY, HIỂN THỊ TRỰC TIẾP ---
+
                             products.map((product) => (
                                 <tr key={product.id} className={styles.tableRow}>
                                     <td className={styles.tableCell}>{product.id}</td>
