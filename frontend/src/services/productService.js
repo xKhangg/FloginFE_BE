@@ -1,6 +1,6 @@
 
 import axios from 'axios';
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = '/api';
 const apiClient = axios.create({
     baseURL: API_BASE_URL
 });
@@ -40,7 +40,7 @@ export const getProducts = (page = 0, categoryId = null, search = '', size = 5) 
 
     // Nếu có từ khóa tìm kiếm thì thêm vào params (gửi key là 'name')
     if (search) {
-        params.name = search; 
+        params.name = search;
     }
 
     return apiClient.get('/products', { params: params });
