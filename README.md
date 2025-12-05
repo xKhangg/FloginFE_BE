@@ -112,6 +112,9 @@ npm start
 
 Frontend sẽ chạy tại: `http://localhost:3000`
 
+### Chạy với Docker (HTTPS)
+`docker-compose up -d --build`
+
 ## 🧪 Chạy Tests
 
 ### Backend Tests
