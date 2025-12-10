@@ -333,7 +333,7 @@ function ProductManagement() {
                             <tr><td colSpan={6} className={styles.tableCellLoading}>Đang tải dữ liệu...</td></tr>
                         ) : (
 
-                            products.map((product) => (
+                            Array.isArray(products) && products.map((product) => (
                                 <tr key={product.id} className={styles.tableRow}>
                                     <td className={styles.tableCell}>{product.id}</td>
                                     <td className={styles.tableCell}>{product.name}</td>
