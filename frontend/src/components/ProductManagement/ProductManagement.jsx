@@ -224,7 +224,7 @@ function ProductManagement() {
                     value={formData.categoryId}
                     onChange={handleFormChange}
                 >
-                    {categories.map((cat) => (
+                    {Array.isArray(categories) && categories.map((cat) => (
                         <option key={cat.id} value={cat.id}>
                             {cat.name}
                         </option>
@@ -293,7 +293,7 @@ function ProductManagement() {
                             onChange={handleCategoryFilterChange}
                         >
                             <option value="All">Tất cả</option>
-                            {categories.map((cat) => (
+                            {Array.isArray(categories) && categories.map((cat) => (
                                 <option key={cat.id} value={cat.id}>
                                     {cat.name}
                                 </option>
