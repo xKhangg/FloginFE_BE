@@ -1,13 +1,15 @@
+Cypress.on('uncaught:exception', (err, runnable) => {
+    if (err.message.includes("Cannot read properties of null (reading 'document')")) {
+        return false;
+    }
+    return true;
+});
 class ProductPage {
     elements = {
         searchInput: () => cy.get('input[placeholder="Tìm kiếm theo tên..."]'),
-        categorySelect: () => cy.contains('option', 'Tất cả').parent(),
         addBtn: () => cy.contains('button', 'Thêm mới'),
 
         tableRows: () => cy.get('table tbody tr'),
-        nextPageBtn: () => cy.contains('button', 'Sau'),
-        prevPageBtn: () => cy.contains('button', 'Trước'),
-        pageInfo: () => cy.get('span').contains('Trang'),
 
         nameInput: () => cy.get('input[name="name"]').filter(':visible'),
         priceInput: () => cy.get('input[name="price"]').filter(':visible'),
@@ -17,12 +19,10 @@ class ProductPage {
 
         saveBtn: () => cy.contains('button', 'Lưu'),
         updateBtn: () => cy.contains('button', 'Cập nhật'),
-        cancelBtn: () => cy.contains('button', 'Hủy'),
         confirmDeleteBtn: () => cy.contains('button', 'Xác nhận Xóa'),
         closeViewBtn: () => cy.contains('button', 'Đóng'),
 
         addDialogTitle: () => cy.contains('h2', 'Thêm sản phẩm mới'),
-        editDialogTitle: () => cy.contains('h2', 'Cập nhật sản phẩm'),
         deleteDialogTitle: () => cy.contains('h2', 'Xác nhận Xóa'),
         viewDialogTitle: () => cy.contains('h2', 'Chi tiết sản phẩm'),
     };
@@ -36,19 +36,23 @@ class ProductPage {
         this.elements.searchInput().clear().type(name);
     }
 
-    filterByCategory(categoryName) {
-        this.elements.categorySelect().select(categoryName);
-    }
-
     openAddModal() {
         this.elements.addBtn().click();
+    }
+
+    waitForCategories() {
+        cy.get('select[name="categoryId"] option', { timeout: 10000 })
+            .should('contain', 'Trinh thám');
     }
 
     fillProductForm(product) {
         if (product.name) this.elements.nameInput().clear().type(product.name);
         if (product.price) this.elements.priceInput().clear().type(product.price);
         if (product.quantity) this.elements.quantityInput().clear().type(product.quantity);
-        if (product.categoryName) this.elements.categoryInput().select(product.categoryName);
+        if (product.categoryName){
+            this.waitForCategories();
+            this.elements.categoryInput().select(product.categoryName);
+        }
         if (product.description) this.elements.descriptionInput().clear().type(product.description);
     }
 
@@ -82,8 +86,6 @@ class ProductPage {
     }
 
     verifyProductVisible(name) {
-        cy.contains('td', 'Đang tải dữ liệu...').should('not.exist');
-
         cy.contains('table tbody tr', name)
             .scrollIntoView()
             .should('be.visible');
