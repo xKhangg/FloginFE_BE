@@ -3,8 +3,10 @@ import LoginPage from '../pages/LoginPage.js';
 
 describe('Product Management E2E Tests using POM', () => {
 
+    const timestamp = new Date().getTime();
+
     const initialProduct = {
-        name: `Sách POM`,
+        name: `Sách POM ${timestamp}`,
         price: '150000',
         quantity: '50',
         categoryName: 'Trinh thám',
@@ -12,15 +14,17 @@ describe('Product Management E2E Tests using POM', () => {
     };
 
     const updatedProduct = {
-        name: `Sách POM 1`,
+        name: `Sách POM ${timestamp} UPDATED`,
         price: '250000',
         quantity: '10'
     };
 
     beforeEach(() => {
-        LoginPage.open();
-        LoginPage.login('testuser', 'Test123');
-        cy.url().should('not.include', '/login');
+        cy.session('user-session', () => {
+            LoginPage.open();
+            LoginPage.login('testuser', 'Test123');
+            cy.url().should('not.include', '/login');
+        });
 
         productPage.visit();
     });
@@ -46,7 +50,14 @@ describe('Product Management E2E Tests using POM', () => {
         productPage.elements.closeViewBtn().click();
     });
 
-    it('e) Search & Filter: Tìm theo tên sản phẩm', () => {
+    it('e) Search & Filter: Tìm theo tên và Lọc theo loại', () => {
+        productPage.searchProduct(initialProduct.name);
+        productPage.verifyProductVisible(initialProduct.name);
+
+        productPage.elements.tableRows().should('have.length', 1);
+
+        productPage.filterByCategory(initialProduct.categoryName);
+
         productPage.searchProduct(initialProduct.name);
         productPage.verifyProductVisible(initialProduct.name);
     });
@@ -64,6 +75,8 @@ describe('Product Management E2E Tests using POM', () => {
         productPage.verifyProductVisible(updatedProduct.name);
 
         cy.contains('250,000').should('be.visible');
+
+        productPage.searchProduct(initialProduct.name);
     });
 
     it('d) Delete: Xóa sản phẩm thành công', () => {
@@ -73,7 +86,13 @@ describe('Product Management E2E Tests using POM', () => {
 
         productPage.searchProduct(updatedProduct.name);
 
-        productPage.verifyProductNotVisible(updatedProduct.name);
+        cy.get('body').then(($body) => {
+            if ($body.find('table tbody tr').length > 0) {
+                productPage.verifyProductNotVisible(updatedProduct.name);
+            } else {
+                cy.contains(updatedProduct.name).should('not.exist');
+            }
+        });
     });
 
     it('Validation: Nên hiện lỗi khi nhập dữ liệu không hợp lệ', () => {
@@ -104,9 +123,11 @@ describe('Security Test: XSS Vulnerability', () => {
     };
 
     beforeEach(() => {
-        LoginPage.open();
-        LoginPage.login('testuser', 'Test123');
-        cy.url().should('not.include', '/login');
+        cy.session('user-session', () => {
+            LoginPage.open();
+            LoginPage.login('testuser', 'Test123');
+            cy.url().should('not.include', '/login');
+        });
 
         productPage.visit();
     });
