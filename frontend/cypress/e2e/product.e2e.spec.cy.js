@@ -26,7 +26,9 @@ describe('Product Management E2E Tests using POM', () => {
     });
 
     it('a) Create: Tạo sản phẩm mới thành công', () => {
+        cy.intercept('GET', '/api/categories').as('getCategories');
         productPage.openAddModal();
+        cy.wait('@getCategories');
         productPage.fillProductForm(initialProduct);
         productPage.submitCreate();
 
