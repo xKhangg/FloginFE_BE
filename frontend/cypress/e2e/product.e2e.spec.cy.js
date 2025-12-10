@@ -18,11 +18,9 @@ describe('Product Management E2E Tests using POM', () => {
     };
 
     beforeEach(() => {
-        cy.session('user-session', () => {
-            LoginPage.open();
-            LoginPage.login('testuser', 'Test123');
-            cy.url().should('not.include', '/login');
-        });
+        LoginPage.open();
+        LoginPage.login('testuser', 'Test123');
+        cy.url().should('not.include', '/login');
 
         productPage.visit();
     });
