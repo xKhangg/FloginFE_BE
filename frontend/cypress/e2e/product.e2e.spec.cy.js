@@ -7,7 +7,7 @@ describe('Product Management E2E Tests using POM', () => {
         name: `Sách POM`,
         price: '150000',
         quantity: '50',
-        categoryName: 'Trinh thám',
+        categoryName: 'Khoa học',
         description: 'Mô tả test tự động dùng Page Object Model'
     };
 
