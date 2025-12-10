@@ -43,7 +43,10 @@ class ProductPage {
         if (product.name) this.elements.nameInput().clear().type(product.name);
         if (product.price) this.elements.priceInput().clear().type(product.price);
         if (product.quantity) this.elements.quantityInput().clear().type(product.quantity);
-        if (product.categoryName) this.elements.categoryInput().select(product.categoryName);
+        if (product.categoryName) {
+            this.elements.categoryInput().should('not.be.empty');
+            this.elements.categoryInput().select(product.categoryName);
+        }
         if (product.description) this.elements.descriptionInput().clear().type(product.description);
     }
 
