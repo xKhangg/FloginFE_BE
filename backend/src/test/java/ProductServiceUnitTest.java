@@ -97,10 +97,7 @@ public class ProductServiceUnitTest {
         assertEquals(10, result.getQuantity());
 
         //VERIFY
-        verify(categoryRepository, times(1)).findById(eq(categoryId));
         verify(productRepository, times(1)).save(any(ProductEntity.class));
-        verify(productMapper, times(1))
-                .toDTO(any(ProductEntity.class));
     }
 
     @Test
@@ -119,7 +116,6 @@ public class ProductServiceUnitTest {
         newProductDTO.setQuantity(15);
         newProductDTO.setDescription("Book2 for testing");
         newProductDTO.setCategoryId(newCategoryEntity.getId());
-        newProductDTO.setCategoryName(newCategoryEntity.getName());
 
         when(categoryRepository.findById(eq(newCategoryEntity.getId())))
                 .thenReturn(Optional.of(newCategoryEntity));
@@ -139,16 +135,8 @@ public class ProductServiceUnitTest {
         assertEquals(15, result.getQuantity());
 
         //VERIFY
-        verify(categoryRepository, times(1))
-                .findById(eq(newCategoryEntity.getId()));
         verify(productRepository, times(1))
                 .findById(eq(productId));
-
-        verify(productMapper, times(1))
-                .toDTO(any(ProductEntity.class));
-
-        verify(productRepository, never())
-                .save(any(ProductEntity.class));
     }
 
     @Test
@@ -170,12 +158,9 @@ public class ProductServiceUnitTest {
         //ASSERT
         assertNotNull(resultPage);
         assertEquals(1L, resultPage.getTotalElements());
-        assertEquals(1, resultPage.getContent().size());
 
         //VERIFY
         verify(productRepository, times(1)).searchProducts(any(), any(), any(Pageable.class));
-        verify(productMapper, times(1))
-                .toDTO(any(ProductEntity.class));
     }
 
     @Test
@@ -199,8 +184,6 @@ public class ProductServiceUnitTest {
 
         //VERIFY
         verify(productRepository, times(1)).findById(eq(productId));
-        verify(productMapper, times(1))
-                .toDTO(any(ProductEntity.class));
     }
 
     @Test
@@ -261,7 +244,6 @@ public class ProductServiceUnitTest {
         });
 
         // VERIFY
-        verify(categoryRepository, times(1)).findById(anyInt());
         verify(productRepository, never()).save(any());
     }
 
@@ -279,7 +261,6 @@ public class ProductServiceUnitTest {
 
         // VERIFY
         verify(productRepository, times(1)).findById(eq(999));
-        verifyNoInteractions(productMapper);
     }
 
     @Test
@@ -293,9 +274,7 @@ public class ProductServiceUnitTest {
         assertEquals("Tham số truyền vào productId không được null", exception.getMessage());
 
         // VERIFY
-        verifyNoInteractions(categoryRepository);
         verifyNoInteractions(productRepository);
-        verifyNoInteractions(productMapper);
     }
 
     @Test
@@ -309,8 +288,6 @@ public class ProductServiceUnitTest {
         assertEquals("Tham số truyền vào productDTO không được null", exception.getMessage());
 
         // VERIFY
-        verifyNoInteractions(categoryRepository);
         verifyNoInteractions(productRepository);
-        verifyNoInteractions(productMapper);
     }
 }

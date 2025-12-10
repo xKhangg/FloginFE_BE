@@ -43,7 +43,6 @@ jobs:
       - name: Backend - Test (Product)
         run: |
           cd backend
-          # Thêm -Dtest=*Product* để chỉ chạy các file test có tên chứa chữ Product
           mvn clean test -Dtest=*Product*
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/FloginFE_BE
@@ -61,7 +60,6 @@ jobs:
         continue-on-error: true
         run: |
           cd frontend
-          # Thêm từ khóa 'Product' để Jest chỉ chạy các file test liên quan đến Product
           npm test -- Product --watchAll=false --passWithNoTests
 
       # --- 4. CHUẨN BỊ E2E: KHỞI ĐỘNG SERVER ---

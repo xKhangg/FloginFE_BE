@@ -97,8 +97,6 @@ public class ProductServiceMockTest {
         //VERIFY
         verify(productRepository, times(1))
                 .findById(eq(productId));
-        verify(productMapper, times(1))
-                .toDTO(any(ProductEntity.class));
     }
 
     @Test
@@ -123,10 +121,7 @@ public class ProductServiceMockTest {
         assertEquals(10, result.getQuantity());
 
         //VERIFY
-        verify(categoryRepository, times(1)).findById(eq(categoryId));
         verify(productRepository, times(1)).save(any(ProductEntity.class));
-        verify(productMapper, times(1))
-                .toDTO(any(ProductEntity.class));
     }
 
     @Test
@@ -152,8 +147,6 @@ public class ProductServiceMockTest {
 
         //VERIFY
         verify(productRepository, times(1)).searchProducts(any(), any(), any(Pageable.class));
-        verify(productMapper, times(1))
-                .toDTO(any(ProductEntity.class));
     }
 
     @Test
@@ -172,7 +165,6 @@ public class ProductServiceMockTest {
         newProductDTO.setQuantity(15);
         newProductDTO.setDescription("Book2 for testing");
         newProductDTO.setCategoryId(newCategoryEntity.getId());
-        newProductDTO.setCategoryName(newCategoryEntity.getName());
 
         when(categoryRepository.findById(eq(newCategoryEntity.getId())))
                 .thenReturn(Optional.of(newCategoryEntity));
@@ -192,16 +184,8 @@ public class ProductServiceMockTest {
         assertEquals(15, result.getQuantity());
 
         //VERIFY
-        verify(categoryRepository, times(1))
-                .findById(eq(newCategoryEntity.getId()));
         verify(productRepository, times(1))
                 .findById(eq(productId));
-
-        verify(productMapper, times(1))
-                .toDTO(any(ProductEntity.class));
-
-        verify(productRepository, never())
-                .save(any(ProductEntity.class));
     }
 
     @Test

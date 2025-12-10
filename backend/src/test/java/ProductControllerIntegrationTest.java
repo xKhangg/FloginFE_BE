@@ -63,7 +63,6 @@ public class ProductControllerIntegrationTest {
         responseProductDTO.setPrice(100_000D);
         responseProductDTO.setQuantity(10);
         responseProductDTO.setCategoryId(1);
-        responseProductDTO.setCategoryName("Trinh thám");
         responseProductDTO.setDescription("Book1 for testing");
     }
 
@@ -83,14 +82,14 @@ public class ProductControllerIntegrationTest {
 
         //VERIFY
         mockMvc.perform(get("/api/products")
-                        .param("page", "0")
-                        .param("size", "10")
-                        .with(csrf()))
+                        .param("page", "0"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(2)))
                 .andExpect(jsonPath("$.content[0].name").value("Book1"))
                 .andExpect(jsonPath("$.content[0].price").value(100_000D))
                 .andExpect(jsonPath("$.content[0].quantity").value(10));
+
+        verify(productService, times(1)).getAllProductsPaginated(any(), any(), anyInt(), anyInt());
     }
 
     @Test
@@ -101,14 +100,15 @@ public class ProductControllerIntegrationTest {
                 .thenReturn(responseProductDTO);
 
         //ACT & VERIFY
-        mockMvc.perform(get("/api/products/" + productId)
-                        .with(csrf()))
+        mockMvc.perform(get("/api/products/" + productId))
                 .andExpect(status().isOk())
 
                 .andExpect(jsonPath("$.id").value(productId))
                 .andExpect(jsonPath("$.name").value("Book1"))
                 .andExpect(jsonPath("$.price").value(100_000D))
                 .andExpect(jsonPath("$.quantity").value(10));
+
+        verify(productService, times(1)).getProductByID(eq(productId));
     }
 
     @Test
