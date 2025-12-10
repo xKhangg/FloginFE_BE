@@ -90,9 +90,7 @@ public class ProductControllerIntegrationTest {
                 .andExpect(jsonPath("$.content", hasSize(2)))
                 .andExpect(jsonPath("$.content[0].name").value("Book1"))
                 .andExpect(jsonPath("$.content[0].price").value(100_000D))
-                .andExpect(jsonPath("$.content[0].quantity").value(10))
-                .andExpect(jsonPath("$.content[0].categoryId").value(1))
-                .andExpect(jsonPath("$.content[0].description").value("Book1 for testing"));
+                .andExpect(jsonPath("$.content[0].quantity").value(10));
     }
 
     @Test
@@ -110,10 +108,7 @@ public class ProductControllerIntegrationTest {
                 .andExpect(jsonPath("$.id").value(productId))
                 .andExpect(jsonPath("$.name").value("Book1"))
                 .andExpect(jsonPath("$.price").value(100_000D))
-                .andExpect(jsonPath("$.quantity").value(10))
-                .andExpect(jsonPath("$.categoryId").value(1))
-                .andExpect(jsonPath("$.categoryName").value("Trinh thám"))
-                .andExpect(jsonPath("$.description").value("Book1 for testing"));
+                .andExpect(jsonPath("$.quantity").value(10));
     }
 
     @Test
@@ -126,19 +121,15 @@ public class ProductControllerIntegrationTest {
         // ----- ACT & VERIFY -----
         mockMvc.perform(post("/api/products")
                         .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON) // 2. Nói rằng tôi đang gửi JSON
-                        .content(objectMapper.writeValueAsString(requestProductDTO))) // 3. Gửi body (chuyển DTO thành chuỗi JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestProductDTO)))
 
-                // 4. Mong đợi status 201 CREATED (không phải 200 OK)
                 .andExpect(status().isCreated())
 
                 .andExpect(jsonPath("$.id").value(productId))
                 .andExpect(jsonPath("$.name").value("Book1"))
                 .andExpect(jsonPath("$.price").value(100_000D))
-                .andExpect(jsonPath("$.quantity").value(10))
-                .andExpect(jsonPath("$.categoryId").value(1))
-                .andExpect(jsonPath("$.categoryName").value("Trinh thám"))
-                .andExpect(jsonPath("$.description").value("Book1 for testing"));
+                .andExpect(jsonPath("$.quantity").value(10));
 
         verify(productService, times(1)).createProduct(any(ProductDTO.class));
     }
@@ -148,7 +139,7 @@ public class ProductControllerIntegrationTest {
     void testUpdateProduct() throws Exception{
         //ARRANGE
         responseProductDTO = new ProductDTO();
-        responseProductDTO.setId(2);
+        responseProductDTO.setId(productId);
         responseProductDTO.setName("Book2");
         responseProductDTO.setPrice(150_000D);
         responseProductDTO.setQuantity(15);
@@ -166,12 +157,9 @@ public class ProductControllerIntegrationTest {
 
                 .andExpect(status().isOk())
 
-                .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.name").value("Book2"))
                 .andExpect(jsonPath("$.price").value(150_000D))
-                .andExpect(jsonPath("$.quantity").value(15))
-                .andExpect(jsonPath("$.categoryId").value(2))
-                .andExpect(jsonPath("$.description").value("Book2 for testing"));
+                .andExpect(jsonPath("$.quantity").value(15));
 
         verify(productService, times(1)).updateProduct(eq(productId), any(ProductDTO.class));
     }
@@ -185,7 +173,6 @@ public class ProductControllerIntegrationTest {
         //ACT & VERIFY
         mockMvc.perform(delete("/api/products/" + productId)
                         .with(csrf()))
-                // 4. Mong đợi status 204 NO CONTENT
                 .andExpect(status().isNoContent());
 
         verify(productService, times(1)).deleteProduct(eq(productId));

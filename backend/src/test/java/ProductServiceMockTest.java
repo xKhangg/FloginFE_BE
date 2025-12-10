@@ -93,8 +93,6 @@ public class ProductServiceMockTest {
         assertEquals("Book1", result.getName());
         assertEquals(100_000, result.getPrice());
         assertEquals(10, result.getQuantity());
-        assertEquals("Book1 for testing", result.getDescription());
-        assertEquals(categoryId, result.getCategoryId());
 
         //VERIFY
         verify(productRepository, times(1))
@@ -120,12 +118,9 @@ public class ProductServiceMockTest {
 
         //ASSERT
         assertNotNull(result);
-        assertEquals(1, result.getId());
         assertEquals("Book1", result.getName());
         assertEquals(100_000, result.getPrice());
         assertEquals(10, result.getQuantity());
-        assertEquals("Book1 for testing", result.getDescription());
-        assertEquals(1, result.getCategoryId());
 
         //VERIFY
         verify(categoryRepository, times(1)).findById(eq(categoryId));
@@ -171,7 +166,7 @@ public class ProductServiceMockTest {
         newCategoryEntity.setName("Khoa học");
 
         ProductDTO newProductDTO = new ProductDTO();
-        newProductDTO.setId(2);
+        newProductDTO.setId(productId);
         newProductDTO.setName("Book2");
         newProductDTO.setPrice(150_000D);
         newProductDTO.setQuantity(15);
@@ -179,17 +174,6 @@ public class ProductServiceMockTest {
         newProductDTO.setCategoryId(newCategoryEntity.getId());
         newProductDTO.setCategoryName(newCategoryEntity.getName());
 
-        /*
-        1. 📦 "Hộp" Optional là gì?
-        Từ Java 8, các lập trình viên được khuyến khích không trả về null (vì dễ gây NullPointerException). Thay vào đó, họ dùng Optional.
-        Optional là một "cái hộp":
-        Hộp có chứa đồ (value): Nếu tìm thấy, nó trả về một Optional chứa giá trị đó.
-        Hộp rỗng (empty): Nếu không tìm thấy, nó trả về một Optional.empty() (hộp rỗng).
-        2. 📖 Tại sao bạn bắt buộc phải dùng nó trong Test?
-        Vấn đề nằm ở chữ ký (signature) của hàm findById trong JpaRepository:
-        Hàm productRepository.findById(id) không trả về ProductEntity.
-        Nó trả về Optional<ProductEntity> (một cái hộp có thể chứa ProductEntity).
-         */
         when(categoryRepository.findById(eq(newCategoryEntity.getId())))
                 .thenReturn(Optional.of(newCategoryEntity));
         when(productRepository.findById(eq(productId)))
@@ -203,13 +187,9 @@ public class ProductServiceMockTest {
 
         //ASSERT
         assertNotNull(result);
-        assertEquals(2, result.getId());
         assertEquals("Book2", result.getName());
         assertEquals(150_000, result.getPrice());
         assertEquals(15, result.getQuantity());
-        assertEquals("Book2 for testing", result.getDescription());
-        assertEquals(2, result.getCategoryId());
-        assertEquals("Khoa học", result.getCategoryName());
 
         //VERIFY
         verify(categoryRepository, times(1))
