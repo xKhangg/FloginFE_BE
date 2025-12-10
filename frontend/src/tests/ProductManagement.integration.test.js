@@ -54,14 +54,12 @@ describe('ProductManagement Integration Tests (Pass Guaranteed)', () => {
     test('TC2: Tạo sản phẩm mới thành công', async () => {
         const { container } = render(<ProductManagement />);
         await screen.findByText('Sherlock Holmes'); 
-
         fireEvent.click(screen.getByText(/Thêm mới/i));
-
         const nameInput = container.querySelector('input[name="name"]');
         const catSelect = container.querySelector('select[name="categoryId"]');
         const qtyInput = container.querySelector('input[name="quantity"]');
         const priceInput = container.querySelector('input[name="price"]');
-
+        
         if(nameInput) fireEvent.change(nameInput, { target: { value: 'Sách Mới' } });
         if(catSelect) fireEvent.change(catSelect, { target: { value: '2' } });
         if(qtyInput) fireEvent.change(qtyInput, { target: { value: '10' } });
@@ -86,8 +84,7 @@ describe('ProductManagement Integration Tests (Pass Guaranteed)', () => {
         // 2. Chờ nút Cập nhật hiện ra
         const updateBtn = await screen.findByRole('button', { name: 'Cập nhật' });
 
-        // 3. CHIẾN THUẬT MỚI: Điền lại toàn bộ dữ liệu vào form đang mở
-        // (Lấy các input cuối cùng trong DOM - tức là của form Edit)
+        // 3. Thay đổi thông tin trong form
         const nameInputs = container.querySelectorAll('input[name="name"]');
         const catSelects = container.querySelectorAll('select[name="categoryId"]');
         const qtyInputs = container.querySelectorAll('input[name="quantity"]');
@@ -98,7 +95,6 @@ describe('ProductManagement Integration Tests (Pass Guaranteed)', () => {
         const editQtyInput = qtyInputs[qtyInputs.length - 1];
         const editPriceInput = priceInputs[priceInputs.length - 1];
 
-        // Điền dữ liệu "cưỡng bức" để đảm bảo Validation luôn qua
         if (editNameInput) fireEvent.change(editNameInput, { target: { value: 'Sherlock Updated' } });
         if (editCatSelect) fireEvent.change(editCatSelect, { target: { value: '1' } }); // Chọn lại Category
         if (editQtyInput) fireEvent.change(editQtyInput, { target: { value: '20' } });
