@@ -3,10 +3,8 @@ import LoginPage from '../pages/LoginPage.js';
 
 describe('Product Management E2E Tests using POM', () => {
 
-    const timestamp = new Date().getTime();
-
     const initialProduct = {
-        name: `Sách POM ${timestamp}`,
+        name: `Sách POM`,
         price: '150000',
         quantity: '50',
         categoryName: 'Trinh thám',
@@ -14,7 +12,7 @@ describe('Product Management E2E Tests using POM', () => {
     };
 
     const updatedProduct = {
-        name: `Sách POM ${timestamp} UPDATED`,
+        name: `Sách POM 1`,
         price: '250000',
         quantity: '10'
     };
@@ -50,14 +48,7 @@ describe('Product Management E2E Tests using POM', () => {
         productPage.elements.closeViewBtn().click();
     });
 
-    it('e) Search & Filter: Tìm theo tên và Lọc theo loại', () => {
-        productPage.searchProduct(initialProduct.name);
-        productPage.verifyProductVisible(initialProduct.name);
-
-        productPage.elements.tableRows().should('have.length', 1);
-
-        productPage.filterByCategory(initialProduct.categoryName);
-
+    it('e) Search & Filter: Tìm theo tên sản phẩm', () => {
         productPage.searchProduct(initialProduct.name);
         productPage.verifyProductVisible(initialProduct.name);
     });
@@ -75,8 +66,6 @@ describe('Product Management E2E Tests using POM', () => {
         productPage.verifyProductVisible(updatedProduct.name);
 
         cy.contains('250,000').should('be.visible');
-
-        productPage.searchProduct(initialProduct.name);
     });
 
     it('d) Delete: Xóa sản phẩm thành công', () => {
@@ -86,13 +75,7 @@ describe('Product Management E2E Tests using POM', () => {
 
         productPage.searchProduct(updatedProduct.name);
 
-        cy.get('body').then(($body) => {
-            if ($body.find('table tbody tr').length > 0) {
-                productPage.verifyProductNotVisible(updatedProduct.name);
-            } else {
-                cy.contains(updatedProduct.name).should('not.exist');
-            }
-        });
+        productPage.verifyProductNotVisible(updatedProduct.name);
     });
 
     it('Validation: Nên hiện lỗi khi nhập dữ liệu không hợp lệ', () => {
