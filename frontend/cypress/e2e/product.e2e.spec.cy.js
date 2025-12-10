@@ -7,7 +7,7 @@ describe('Product Management E2E Tests using POM', () => {
         name: `Sách POM`,
         price: '150000',
         quantity: '50',
-        categoryName: 'Khoa học',
+        categoryName: 'Trinh thám',
         description: 'Mô tả test tự động dùng Page Object Model'
     };
 
@@ -104,11 +104,9 @@ describe('Security Test: XSS Vulnerability', () => {
     };
 
     beforeEach(() => {
-        cy.session('user-session', () => {
-            LoginPage.open();
-            LoginPage.login('testuser', 'Test123');
-            cy.url().should('not.include', '/login');
-        });
+        LoginPage.open();
+        LoginPage.login('testuser', 'Test123');
+        cy.url().should('not.include', '/login');
 
         productPage.visit();
     });
