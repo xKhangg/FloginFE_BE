@@ -44,8 +44,11 @@ class ProductPage {
         if (product.price) this.elements.priceInput().clear().type(product.price);
         if (product.quantity) this.elements.quantityInput().clear().type(product.quantity);
         if (product.categoryName) {
-            this.elements.categoryInput().should('not.be.empty');
-            this.elements.categoryInput().select(product.categoryName);
+            cy.get('select[name="categoryId"] option')
+                .should('have.length.greaterThan', 0);
+
+            cy.get('select[name="categoryId"]')
+                .select(product.categoryName);
         }
         if (product.description) this.elements.descriptionInput().clear().type(product.description);
     }
