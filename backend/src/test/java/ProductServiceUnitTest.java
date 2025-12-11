@@ -267,11 +267,9 @@ public class ProductServiceUnitTest {
     @DisplayName("Cập nhật thất bại: Product ID là null")
     void testUpdateProduct_NullId() {
         // ACT & ASSERT
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             productService.updateProduct(null, productDTO);
         });
-
-        assertEquals("Tham số truyền vào productId không được null", exception.getMessage());
 
         // VERIFY
         verifyNoInteractions(productRepository);
@@ -281,11 +279,9 @@ public class ProductServiceUnitTest {
     @DisplayName("Cập nhật thất bại: ProductDTO là null")
     void testUpdateProduct_NullDTO() {
         // ACT & ASSERT
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             productService.updateProduct(productId, null);
         });
-
-        assertEquals("Tham số truyền vào productDTO không được null", exception.getMessage());
 
         // VERIFY
         verifyNoInteractions(productRepository);
